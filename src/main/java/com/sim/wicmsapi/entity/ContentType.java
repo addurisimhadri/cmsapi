@@ -26,7 +26,7 @@ public class ContentType  {
 	
 	@Id
 	@Column(name = "content_id")
-	private long contentId;	
+	private int contentId;	
 	@Column(name = "content_name")
 	private String contentName;	
 	@Column(name = "max_id")

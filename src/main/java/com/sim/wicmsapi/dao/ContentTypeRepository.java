@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 import com.sim.wicmsapi.entity.ContentType;
 
 @Repository
-public interface ContentTypeRepository extends JpaRepository<ContentType, Long> {
+public interface ContentTypeRepository extends JpaRepository<ContentType, Integer> {
 	
 	 @Query("SELECT ct FROM ContentType ct WHERE active=:active and ct.contentId > :ctTypeId and ct.contentId!=41 and ct.contentId < 90")
 	  List<ContentType> findByContentIdGreaterThanQuery(@Param("ctTypeId") long ctTypeId,@Param("active") String active);

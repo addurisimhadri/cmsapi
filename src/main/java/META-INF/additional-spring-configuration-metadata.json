@@ -1,0 +1,17 @@
+{"properties": [
+  {
+    "name": "upload.unziplocation",
+    "type": "java.lang.String",
+    "description": "A description for 'upload.unziplocation'"
+  },
+  {
+    "name": "upload.destfolder",
+    "type": "java.lang.String",
+    "description": "A description for 'upload.destfolder'"
+  },
+  {
+    "name": "jwt.secret",
+    "type": "java.lang.String",
+    "description": "A description for 'jwt.secret'"
+  }
+]}

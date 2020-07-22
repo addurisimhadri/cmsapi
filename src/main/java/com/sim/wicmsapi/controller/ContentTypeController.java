@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -13,18 +14,20 @@ import com.sim.wicmsapi.entity.ContentType;
 import com.sim.wicmsapi.exception.ContentTypeNotFoundException;
 import com.sim.wicmsapi.service.ContentTypeService;
 
+@CrossOrigin
 @RestController
 @RequestMapping(value = "/ct")
 public class ContentTypeController {
 	@Autowired
 	ContentTypeService contentTypeService;
 	
-	@GetMapping(value = "/getcts")
-	public List<ContentType> getContentTypes() {		
+	@GetMapping(value = "/getAll")
+	public List<ContentType> getContentTypes() {	
+		System.out.println(contentTypeService.getCTs());
 		return contentTypeService.getCTs();
 	}
-	@GetMapping(value = "/getcts/{id}")
-	public ContentType getContentTypes(@RequestParam("id") long id) throws ContentTypeNotFoundException{
+	@GetMapping(value = "/get/{id}")
+	public ContentType getContentTypes(@RequestParam("id") int id) throws ContentTypeNotFoundException{
 		ContentType contentType=null;
 		Optional<ContentType> contenttypes=contentTypeService.getContentType(id);
 		if(contenttypes.isPresent())

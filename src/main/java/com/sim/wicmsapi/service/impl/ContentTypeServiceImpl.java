@@ -16,7 +16,7 @@ public class ContentTypeServiceImpl implements ContentTypeService {
 	@Autowired
 	ContentTypeRepository contentTypeRepository;
 
-	public Optional<ContentType> getContentType(long contentId) {		
+	public Optional<ContentType> getContentType(int contentId) {		
 		return contentTypeRepository.findById(contentId);
 	}
 
