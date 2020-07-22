@@ -8,6 +8,16 @@ public class LoginResponse implements Serializable {
 	
 	private String token;
 	private long userId;
+	private String userName;
+
+	
+	public String getUserName() {
+		return userName;
+	}
+
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
 
 	public LoginResponse() {
 	}
@@ -17,6 +27,13 @@ public class LoginResponse implements Serializable {
 	}
 
 	
+	public LoginResponse(String token, long userId, String userName) {
+		super();
+		this.token = token;
+		this.userId = userId;
+		this.userName = userName;
+	}
+
 	public LoginResponse(String token, long userId) {
 		super();
 		this.token = token;
