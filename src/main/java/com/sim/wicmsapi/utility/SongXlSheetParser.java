@@ -6,8 +6,6 @@ import java.util.Hashtable;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 
-import org.slf4j.Logger;
-
 import com.sim.wicmsapi.vo.ContentObject;
 import com.sim.wicmsapi.vo.SongMetaContentObject;
 
@@ -17,7 +15,6 @@ import jxl.WorkbookSettings;
 
 
 public class SongXlSheetParser {
-	//static Logger logger = Logger.getLogger(SongXlSheetParser.class);
 	public static Hashtable<String ,LinkedHashMap<String,ContentObject >> init(InputStream inputStream) {		
 		Hashtable<String, LinkedHashMap<String,ContentObject >> contentObjects = new Hashtable<String, LinkedHashMap<String,ContentObject >>();
 		InputStream fileInputStream = null;		
@@ -69,7 +66,6 @@ public class SongXlSheetParser {
 		String contentName = "";
 		String metaLanguage = "";
 		boolean isAnotherContent = false;
-		//logger.info("No of Rows in Excel.........."+rowsCount+" No of Columns in Excel.......... "+columnCount);		
 		try {
 			for(int i = 0; i < rowsCount; i++) {				
 				contentObject = new ContentObject();
@@ -80,7 +76,6 @@ public class SongXlSheetParser {
 							contentName = sheet.getCell(j, i + 1).getContents();
 							contentObject.setContentName(contentName.trim());
 							contentObject.setCpContentName(contentName.trim());
-							//logger.info("ContentName ::"+contentName);
 						}
 						if ( (i + 2)==(rowsCount+1) || (!sheet.getCell(j, i + 2).getContents().equals("") ) ) {
 							isAnotherContent = true;
@@ -249,18 +244,14 @@ public class SongXlSheetParser {
 						contentObject.setRating(c_rating);
 					}
 				}
-				if (contentObject != null) {	
-					//logger.info("metaLanguage:"+metaLanguage);
-					if(!metaLanguage.trim().equals("")) {//if meta language not empty
-						//logger.info("Meta Language :"+metaLanguage);
+				if (contentObject != null) {
+					if(!metaLanguage.trim().equals("")) {
 						contentObject.setSmcObject(smcObject);
 						langContentObj.put(metaLanguage.trim(), contentObject);
 					}
-					//contentObj.put(contentName,contentObject);
 					contentObject = null;
 				}
 				if (langContentObj != null && isAnotherContent) {
-					//logger.info("contentName:"+contentName);
 					contentObj.put(contentName.trim(),langContentObj);
 					langContentObj = null;
 					langContentObj = new LinkedHashMap<String,ContentObject >();

@@ -56,13 +56,15 @@ public class WebUploadController {
 	ContentLangService contentLangService;
 	
 	@PostMapping(value = "/upload")
-	public String uploadSingleFile(@RequestParam("cctype") Integer contentId,@RequestParam("ccpId") Integer cpId,@RequestParam("folder") String folder,@RequestParam("file") MultipartFile file) {
+	public String uploadSingleFile(@RequestParam("contentId") Integer contentId,@RequestParam("cpId") Integer cpId,@RequestParam("zipFile") MultipartFile file) {
 		String status="";
+		logger.info("Hello=========================================="+contentId);
 			if (!file.isEmpty()) {				
 				try {
+				 String folder="action";
 					UploadObject uploadObject=new UploadObject();						
 					ContentType contentType=contentTypeService.getContentType(contentId).get();
-					
+					logger.info("Hello=========================================="+contentType);
 					uploadObject.setContentType(contentType);
 					uploadObject.setCtId(contentId);
 					uploadObject.setCpId(cpId);
@@ -105,6 +107,8 @@ public class WebUploadController {
 					e.printStackTrace();
 				}
 				
+			}else {
+				logger.info("Files are empty..");
 			}
 			return status; 
 		}

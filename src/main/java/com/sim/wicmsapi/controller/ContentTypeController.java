@@ -3,6 +3,8 @@ package com.sim.wicmsapi.controller;
 import java.util.List;
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,12 +20,14 @@ import com.sim.wicmsapi.service.ContentTypeService;
 @RestController
 @RequestMapping(value = "/ct")
 public class ContentTypeController {
+	private static final Logger logger = LoggerFactory.getLogger(ContentTypeController.class);
+	
 	@Autowired
 	ContentTypeService contentTypeService;
 	
 	@GetMapping(value = "/getAll")
 	public List<ContentType> getContentTypes() {	
-		System.out.println(contentTypeService.getCTs());
+		logger.info(""+contentTypeService.getCTs());
 		return contentTypeService.getCTs();
 	}
 	@GetMapping(value = "/get/{id}")
