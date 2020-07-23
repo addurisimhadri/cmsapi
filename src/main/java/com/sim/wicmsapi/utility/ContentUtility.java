@@ -21,7 +21,7 @@ public class ContentUtility {
 				content.setCId(contentexists.getCId());
 				content.setLocation(contentexists.getLocation());
 			}
-			//content.setCtTypeId(contentType.getContentId());
+			content.setCtTypeId(contentType.getContentId());
 			content.setName(contentObject.getCpContentName());
 			content.setCpId(contentObject.getCpId());
 			content.setTitle(contentObject.getTitle());

@@ -6,7 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.ComponentScan;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,12 +23,12 @@ import com.sim.wicmsapi.service.ContentService;
 import com.sim.wicmsapi.service.ContentTypeService;
 import com.sim.wicmsapi.service.GameMetaService;
 import com.sim.wicmsapi.service.SongMetaService;
+import com.sim.wicmsapi.vo.ApiResponse;
 import com.sim.wicmsapi.vo.UploadObject;
 
 @CrossOrigin
 @RestController
 @RequestMapping(value ="/web")
-@ComponentScan(basePackages="com.sim.upload")
 public class WebUploadController {
 	private static final Logger logger = LoggerFactory.getLogger(WebUploadController.class);
 	@Value("${upload.unziplocation}")
@@ -56,7 +56,7 @@ public class WebUploadController {
 	ContentLangService contentLangService;
 	
 	@PostMapping(value = "/upload")
-	public String uploadSingleFile(@RequestParam("contentId") Integer contentId,@RequestParam("cpId") Integer cpId,@RequestParam("zipFile") MultipartFile file) {
+	public ApiResponse<Void> uploadSingleFile(@RequestParam("contentId") Integer contentId,@RequestParam("cpId") Integer cpId,@RequestParam("zipFile") MultipartFile file) {
 		String status="";
 		logger.info("Hello=========================================="+contentId);
 			if (!file.isEmpty()) {				
@@ -110,7 +110,7 @@ public class WebUploadController {
 			}else {
 				logger.info("Files are empty..");
 			}
-			return status; 
+			return new ApiResponse<>(HttpStatus.CREATED.value(), status, null);
 		}
 	
 	
