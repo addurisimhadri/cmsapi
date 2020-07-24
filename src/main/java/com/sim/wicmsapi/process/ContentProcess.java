@@ -89,8 +89,12 @@ public class ContentProcess {
 							}
 							destFile1=null;
 							contentObject.setLocation(uploadObject.getCpId()+File.separator+appendFolderName+File.separator+contentObject.getContentName());
-							status = FolderUtility.copyFolderContentToDest(folderMap, destinationPathTemp.replaceAll(File.separator+contentName,""), contentName);
-							//logger.info("Copy content to Destination Directory:"+status);
+							try {
+								status = FolderUtility.copyFolderContentToDest(folderMap, destinationPathTemp.replaceAll(File.separator+contentName,""), contentName);
+								logger.info("Copy content to Destination Directory:"+status);
+							}catch (Exception e) {
+								e.printStackTrace();
+							}
 							Content content= ContentUtility.storeContent(contentObject, contentType,contentexist);
 							content=contentService.save(content);
 							/*

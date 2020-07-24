@@ -15,7 +15,7 @@ public class ZipFileProcess {
 	public static String SingleUpload(MultipartFile file,String UPLOADED_FOLDER, UploadObject uploadObject) {		
 		String status="";
 		try {
-			UPLOADED_FOLDER="/home/appanna/zipfile";
+			//UPLOADED_FOLDER="/home/appanna/zipfile";
 			byte[] bytes = file.getBytes();
 			File dir = new File(UPLOADED_FOLDER);
 			if (!dir.exists())

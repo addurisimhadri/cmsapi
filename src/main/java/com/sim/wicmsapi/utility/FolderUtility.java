@@ -39,7 +39,6 @@ public class FolderUtility {
 		try {
 			for(File destfile : destFileArray) {
 				destFileName = destfile.getName();
-				//logger.info("destFileName:"+destFileName);
 				if( destfile.isDirectory() ) {//if xls file is there
 					fileMap.put(destFileName, destfile);
 				}//else
