@@ -1,5 +1,6 @@
 package com.sim.wicmsapi.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -8,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -31,13 +33,17 @@ public class ContentTypeController {
 		return contentTypeService.getCTs();
 	}
 	@GetMapping(value = "/get/{id}")
-	public ContentType getContentTypes(@RequestParam("id") int id) throws ContentTypeNotFoundException{
+	public List<ContentType> getContentTypes(@PathVariable("id") int id) throws ContentTypeNotFoundException{
 		ContentType contentType=null;
+		List<ContentType> list=new ArrayList<ContentType>();
 		Optional<ContentType> contenttypes=contentTypeService.getContentType(id);
-		if(contenttypes.isPresent())
+		if(contenttypes.isPresent()) {
 			contentType=contenttypes.get();
+			list.add(contentType);
+		logger.info(""+contentType);
+		}
 		else
 			throw new ContentTypeNotFoundException("Content TYpe Id is not found "+id);
-		return contentType;
+		return list;
 	}
 }

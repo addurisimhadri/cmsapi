@@ -119,7 +119,7 @@ public class SongContentProcess {
 														contentProcessFTPService.save(contentProcessFTP);
 														
 														if(contentexist==null)
-															contentType.setMaxId(content.getCId());
+															contentType.setMaxId(content.getContId());
 													}
 												}
 											}

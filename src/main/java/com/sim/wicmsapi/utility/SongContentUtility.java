@@ -16,11 +16,11 @@ public class SongContentUtility {
 		
 		try {
 			if(contentexists==null) {
-				content.setCId(contentType.getMaxId()+1);
+				content.setContId(contentType.getMaxId()+1);
 				content.setLocation(contentObject.getLocation());
 			}
 			else {
-				content.setCId(contentexists.getCId());
+				content.setContId(contentexists.getContId());
 				content.setLocation(contentexists.getLocation());
 			}
 			content.setCtTypeId(contentType.getContentId());
@@ -51,7 +51,7 @@ public class SongContentUtility {
 	public static SongMeta storeSongMetaContent(ContentObject contentObject, Content content) {
 		SongMeta songMeta=new SongMeta();
 		try {
-			songMeta.setSmId(content.getCId());
+			songMeta.setSmId(content.getContId());
 			songMeta.setContentTypeId(content.getCtTypeId());
 			songMeta.setDirectors(contentObject.getSmcObject().getDirectors());
 			songMeta.setActors(contentObject.getSmcObject().getActors());

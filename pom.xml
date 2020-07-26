@@ -107,6 +107,21 @@
     <version>2.6.12</version>
 </dependency>
 
+<!-- https://mvnrepository.com/artifact/org.json/json -->
+<dependency>
+    <groupId>org.json</groupId>
+    <artifactId>json</artifactId>
+    <version>20190722</version>
+</dependency>
+
+
+<dependency> 
+       <groupId>com.google.code.gson</groupId> 
+       <artifactId>gson</artifactId> 
+       <version>2.6.2</version> 
+   </dependency> 
+
+
 <!-- We need to include the javax.servlet API specs, the implementation will be provided by Wildfly / JBoss -->
     <dependency>
       <groupId>javax.servlet</groupId>
