@@ -14,11 +14,11 @@ public class ContentUtility {
 		Content content=new Content();
 		try {
 			if(contentexists==null) {
-				content.setCId(contentType.getMaxId()+1);
+				content.setContId(contentType.getMaxId()+1);
 				content.setLocation(contentObject.getLocation());
 			}
 			else {
-				content.setCId(contentexists.getCId());
+				content.setContId(contentexists.getContId());
 				content.setLocation(contentexists.getLocation());
 			}
 			content.setCtTypeId(contentType.getContentId());
@@ -50,7 +50,7 @@ public class ContentUtility {
 		
 		GameMeta gameMeta=new GameMeta();
 		try {
-			gameMeta.setGmId(content.getCId());
+			gameMeta.setGmId(content.getContId());
 			gameMeta.setContentId(content.getCtTypeId());
 			String gameType="";
 			switch (content.getCtTypeId()) {

@@ -105,7 +105,7 @@ public class ContentProcess {
 								gameMetaService.save(gameMeta);
 							}
 							if(contentexist==null)
-								contentType.setMaxId(content.getCId());
+								contentType.setMaxId(content.getContId());
 						}
 					}
 				}
