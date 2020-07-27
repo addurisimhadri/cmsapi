@@ -20,7 +20,8 @@ public class ContentController {
 	ContentService contentService;
 	
 	@GetMapping(value="/{ctId}/getAll")	
-	public Iterable<Content> getEmployee(@PathVariable("ctId") int ctId, Pageable pageable){		
+	public Iterable<Content> getEmployee(@PathVariable("ctId") int ctId, Pageable pageable){	
+		
 		return contentService.getContentByCT(ctId,pageable);
 	}
 
