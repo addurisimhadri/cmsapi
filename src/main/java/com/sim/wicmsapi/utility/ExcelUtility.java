@@ -19,14 +19,11 @@ public class ExcelUtility {
 		boolean status = false;
 		try {
 			ZipFile zipFile = new ZipFile(zipFilePath);
-			//logger.info(""+zipFile.size());
 			entries = zipFile.entries();
 		    while(entries.hasMoreElements()) {
 		    	ZipEntry entry = (ZipEntry)entries.nextElement();
-		    	//logger.info("entry::"+entry);
 			    if((entry.getName().endsWith(".xls")) && !(entry.getName().contains("devices")||entry.getName().contains("Devices"))) {
 			        status = true ;
-			       // logger.info("--->"+zipFile.getInputStream(entry).read());
 			        hashtable = XlSheetParser.init(zipFile.getInputStream(entry));
 			    }
 		   }

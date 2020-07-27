@@ -61,8 +61,8 @@ public class ZipUtility {
 			List<FileEntry> list = zipFile.getListFileEntries();
 			Iterator<FileEntry> it  = list.iterator();
 			//logger.info("ZipFileEntryList "+list);
-			String zipFileName = absolutePath.substring(absolutePath.lastIndexOf("/")+1, absolutePath.lastIndexOf("."));	 
-			entry1 = zipFile.getFileEntry(contentName+"/");
+			String zipFileName = absolutePath.substring(absolutePath.lastIndexOf(File.separator)+1, absolutePath.lastIndexOf("."));	 
+			entry1 = zipFile.getFileEntry(contentName+File.separator);
 			//logger.info("entry1entry1entry1 "+entry1);
 			if(entry1 == null ) {
 				new File(contentLocation+contentName).mkdir();
@@ -91,8 +91,9 @@ public class ZipUtility {
 				else {
 					if(!((entry.getName().endsWith(".db")))) {
 						File f1 = new File(contentLocation+entry.getName());
-						if(!f1.exists())
+						if(!f1.exists()) {
 							f1.createNewFile();	
+						}
 						EntryInputStream eis = zipFile.openEntryInputStream(entry.getName());
 						copyFile(eis,f1);
 						f1=null;
@@ -115,20 +116,22 @@ public class ZipUtility {
 	    return status ;
 	}
 	public static void copyFile(InputStream in, File targetFile) throws IOException{
-		OutputStream out = new FileOutputStream(targetFile);
-        byte[] buf = new byte[1024];
-        int len;
-        while ((len = in.read(buf)) > 0) {
-            out.write(buf, 0, len);
-        }
+		
+		try(OutputStream out = new FileOutputStream(targetFile);) {
+			byte[] buf = new byte[1024];
+	        int len;
+	        while ((len = in.read(buf)) > 0) {
+	            out.write(buf, 0, len);
+	        }
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
         in.close();
-        out.close();
-		out=null;
 		in=null;
 		targetFile=null;
 	}
 	public static String getTruncatedString(String str,int len)
 	{
-		return str=(str.equals("")  || str.length()<len)?str:str.substring(0,len);
+		return (str.equals("")  || str.length()<len)?str:str.substring(0,len);
 	}
 }

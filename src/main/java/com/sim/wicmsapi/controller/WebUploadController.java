@@ -1,6 +1,7 @@
 package com.sim.wicmsapi.controller;
 
 import java.io.File;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,13 +59,14 @@ public class WebUploadController {
 	@PostMapping(value = "/upload")
 	public ApiResponse<Void> uploadSingleFile(@RequestParam("contentId") Integer contentId,@RequestParam("cpId") Integer cpId,@RequestParam("zipFile") MultipartFile file) {
 		String status="";
-		logger.info("Hello=========================================="+contentId);
+		ContentType contentType=new ContentType();;
 			if (!file.isEmpty()) {				
 				try {
 				 String folder="action";
-					UploadObject uploadObject=new UploadObject();						
-					ContentType contentType=contentTypeService.getContentType(contentId).get();
-					logger.info("Hello=========================================="+contentType);
+					UploadObject uploadObject=new UploadObject();
+					Optional<ContentType> contentTypeOp=contentTypeService.getContentType(contentId);
+					if(contentTypeOp.isPresent())
+						contentType=contentTypeOp.get();
 					uploadObject.setContentType(contentType);
 					uploadObject.setCtId(contentId);
 					uploadObject.setCpId(cpId);
@@ -84,7 +86,7 @@ public class WebUploadController {
 						 * content upload to Zip location
 						 */
 						
-						status=ZipFileProcess.SingleUpload(file, UPLOADED_FOLDER,uploadObject);
+						status=ZipFileProcess.singleUpload(file, UPLOADED_FOLDER,uploadObject);
 						/*
 						 * Content Processing
 						 */

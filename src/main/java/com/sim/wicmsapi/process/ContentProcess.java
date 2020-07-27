@@ -39,7 +39,7 @@ public class ContentProcess {
 			 * UnZipLocation
 			 */
 			String uploadExtractLoc = uploadObject.getSrcDir();
-			if(!uploadExtractLoc.endsWith("/")) uploadExtractLoc = uploadExtractLoc+File.separator;
+			if(!uploadExtractLoc.endsWith(File.separator)) uploadExtractLoc = uploadExtractLoc+File.separator;
 			/*
 			 * We can Check the Zip File Name exists or not , if Zip File name exists we can delete.
 			 */
@@ -81,7 +81,7 @@ public class ContentProcess {
 								destinationPathTemp=destpath.endsWith(File.separator)?destpath+contentexist.getLocation():destpath+File.separator+contentexist.getLocation();
 							}
 							contentObject.setCpId(uploadObject.getCpId());
-							if(!destinationPathTemp.endsWith("/")) destinationPathTemp = destinationPathTemp+"/";
+							if(!destinationPathTemp.endsWith(File.separator)) destinationPathTemp = destinationPathTemp+File.separator;
 							logger.info("destinationPathTemp::"+destinationPathTemp);
 							File destFile1 = new File(destinationPathTemp);		
 							if (!destFile1.exists()) {
