@@ -1,52 +1,50 @@
 package com.sim.wicmsapi.utility;
 
 import java.util.Enumeration;
-import java.util.Hashtable;
 import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.Marker;
+import org.slf4j.MarkerFactory;
 
 import com.sim.wicmsapi.vo.ContentObject;
 
 public class ExcelUtility {
 	private static final Logger logger = LoggerFactory.getLogger(ExcelUtility.class);
-	public static Hashtable<String , ContentObject> parseXsl(String zipFilePath ) {
-		Hashtable<String , ContentObject> hashtable = null ;
+	static Marker myMarker = MarkerFactory.getMarker("MYMARKER");
+	
+	private ExcelUtility() {}
+	
+	public static Map<String , ContentObject> parseXsl(String zipFilePath ) {
+		Map<String , ContentObject> hashtable = null ;
 		Enumeration<?> entries = null;
-		boolean status = false;
-		try {
-			ZipFile zipFile = new ZipFile(zipFilePath);
+		try(ZipFile zipFile = new ZipFile(zipFilePath);) {			
 			entries = zipFile.entries();
 		    while(entries.hasMoreElements()) {
 		    	ZipEntry entry = (ZipEntry)entries.nextElement();
 			    if((entry.getName().endsWith(".xls")) && !(entry.getName().contains("devices")||entry.getName().contains("Devices"))) {
-			        status = true ;
-			        hashtable = XlSheetParser.init(zipFile.getInputStream(entry));
+			    	hashtable = XlSheetParser.init(zipFile.getInputStream(entry));
 			    }
 		   }
-		    zipFile.close();
-		   if(!status)
-			   hashtable = null;
 		}
 		catch(Exception e) {
-			logger.error("Ex:: "+e);
+			logger.info(myMarker,"Ex:: {}",e.getMessage());
 		}
 		finally {
 			if(entries!=null)entries=null;
 		}
 		return hashtable;
 	}
-	public static Hashtable<String ,LinkedHashMap<String,ContentObject >> songParseXsl(String zipFilePath )
+	public static Map<String ,LinkedHashMap<String,ContentObject >> songParseXsl(String zipFilePath )
 	{
-		Hashtable<String ,LinkedHashMap<String,ContentObject >> hashtable = null ;
+		Map<String ,LinkedHashMap<String,ContentObject >> hashtable = null ;
 		Enumeration<?> entries = null;
-		ZipFile zipFile=null;
 		boolean status = false;
-		try {
-			zipFile = new ZipFile(zipFilePath);
+		try(ZipFile zipFile = new ZipFile(zipFilePath);) {			
 			entries  = zipFile.entries();
 			while(entries.hasMoreElements()) {
 				ZipEntry entry = (ZipEntry)entries.nextElement();
@@ -60,7 +58,7 @@ public class ExcelUtility {
 		}
 		catch(Exception e)
 		{
-			
+			logger.info(myMarker,"Ex:: {}",e.getMessage());
 		}
 		finally
 		{

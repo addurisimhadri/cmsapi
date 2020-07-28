@@ -30,16 +30,18 @@ import com.sim.wicmsapi.vo.UploadObject;
 
 public class SongContentProcess {
 	private static final Logger logger = LoggerFactory.getLogger(ContentProcess.class);
+	
+	private SongContentProcess() {
+		
+	}
 	public static void songContentProcess(UploadObject uploadObject, ContentService contentService,
 			ContentTypeService contentTypeService, SongMetaService songMetaService, Map<String, String> contentLangMap, ContentProcessFTPService contentProcessFTPService) {
-		Hashtable<String ,LinkedHashMap<String,ContentObject >> ht = null;
+		Map<String ,LinkedHashMap<String,ContentObject >> ht = null;
 		LinkedHashMap<String,ContentObject > langHt= null;
-		try {
-			ContentType contentType=uploadObject.getContentType();
-			
-			String zipFilePath=uploadObject.getZipFilePath();
-			logger.info("zipFilePath:: "+zipFilePath);
-			String destpath=uploadObject.getDestDir();
+		ContentType contentType=uploadObject.getContentType();
+		String zipFilePath=uploadObject.getZipFilePath();
+		String destpath=uploadObject.getDestDir();
+		try {			
 			/*
 			 * Reading the content information from excel sheet
 			 */
@@ -47,12 +49,14 @@ public class SongContentProcess {
 			
 			if( ht != null && ht.size() >= 1) {
 				String appendFolderName= FolderUtility.getFolderString();
-				Enumeration<String> entries = ht.keys();
-				int updatedCount = 1,maxupdateCount=65536;
-				while(entries.hasMoreElements()) {
-					String contentName = (String) entries.nextElement();
-					langHt = (LinkedHashMap<String,ContentObject >)ht.get(contentName);
-					ContentObject contentObj = (ContentObject) langHt.get("English");
+				Set<String> keys = ht.keySet();
+				int updatedCount = 1; 
+				int maxupdateCount=65536;
+				Iterator<String> keyIt=keys.iterator();
+				while(keyIt.hasNext()) {
+					String contentName =  keyIt.next();
+					langHt = ht.get(contentName);
+					ContentObject contentObj =  langHt.get("English");
 					if(contentObj != null) {
 						/*
 						 * We are checking the content available or not.
@@ -67,7 +71,7 @@ public class SongContentProcess {
 							destinationPathTemp=destpath.endsWith(File.separator)?destpath+uploadObject.getCpId()+File.separator+appendFolderName:destpath+File.separator+uploadObject.getCpId()+File.separator+appendFolderName;
 						}else {
 							updatedCount--;
-							destinationPathTemp=destpath.endsWith(File.separator)?destpath+contentexist.getLocation().replaceAll("/"+contentName,""):destpath+File.separator+contentexist.getLocation().replaceAll("/"+contentName,"");
+							destinationPathTemp=destpath.endsWith(File.separator)?destpath+contentexist.getLocation().replaceAll(File.separator+contentName,""):destpath+File.separator+contentexist.getLocation().replaceAll(File.separator+contentName,"");
 						}
 						logger.info("destinationPathTemp "+destinationPathTemp);
 						File destFile1 = new File(destinationPathTemp);
@@ -82,7 +86,7 @@ public class SongContentProcess {
 							String metaLanguages = "";	
 							File file1 = destFile;
 							if(file1.isDirectory()) {
-								langHt = (LinkedHashMap<String,ContentObject >)ht.get(file1.getName());
+								langHt =ht.get(file1.getName());
 								if(langHt != null) {
 									logger.info("Processing the content Folder :"+file1.getName());
 									String metaLanguage = "";

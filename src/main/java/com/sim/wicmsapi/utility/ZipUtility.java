@@ -10,6 +10,8 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.Marker;
+import org.slf4j.MarkerFactory;
 
 import ch.enterag.utils.zip.EntryInputStream;
 import ch.enterag.utils.zip.FileEntry;
@@ -17,6 +19,7 @@ import ch.enterag.utils.zip.Zip64File;
 
 public class ZipUtility {
 	private static final Logger logger = LoggerFactory.getLogger(ZipUtility.class);
+	static Marker myMarker = MarkerFactory.getMarker("MYMARKER");
 	/*private static void unzip(String zipFilePath, String destDir) {
         File dir = new File(destDir);
         // create output directory if it doesn't exist
@@ -59,20 +62,21 @@ public class ZipUtility {
 		try {	    	
 			zipFile = new Zip64File(absolutePath);
 			List<FileEntry> list = zipFile.getListFileEntries();
+			logger.info(myMarker," list of {}  ", list);
 			Iterator<FileEntry> it  = list.iterator();
-			//logger.info("ZipFileEntryList "+list);
 			String zipFileName = absolutePath.substring(absolutePath.lastIndexOf(File.separator)+1, absolutePath.lastIndexOf("."));	 
 			entry1 = zipFile.getFileEntry(contentName+File.separator);
-			//logger.info("entry1entry1entry1 "+entry1);
 			if(entry1 == null ) {
-				new File(contentLocation+contentName).mkdir();
-				contentLocation = contentLocation+contentName+File.separator;
+				new File(contentLocation).mkdir();
+				contentLocation = contentLocation;
+				logger.info(myMarker," contentLocation Ended of {}  ", contentLocation);
 			}
-			//logger.info("unziplocation::"+contentLocation);
 			while(it.hasNext()) {
 				FileEntry entry = (FileEntry)it.next();
+				logger.info(myMarker," list of {}  ", entry.getName());
 				if(entry.isDirectory()) {
 					File dirFile = 	new File(contentLocation+entry.getName());
+					logger.info(myMarker," getCanonicalPath of {}  ", dirFile.getCanonicalPath());
 					if(dirFile.exists()) {	
 						if(!dirFile.getName().equals(zipFileName)) {
 							File[] files = dirFile.listFiles();

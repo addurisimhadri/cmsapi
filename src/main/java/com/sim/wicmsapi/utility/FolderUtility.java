@@ -7,9 +7,14 @@ import java.util.TreeMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.Marker;
+import org.slf4j.MarkerFactory;
 
 public class FolderUtility {
-	public static final Logger logger = LoggerFactory.getLogger(FolderUtility.class);	
+	public static final Logger logger = LoggerFactory.getLogger(FolderUtility.class);
+	static Marker myMarker = MarkerFactory.getMarker("MYMARKER");
+	
+	private FolderUtility() {}
 	public static String getFolderString() {
 		java.util.Calendar gc=new java.util.GregorianCalendar();
 		String msgid="",temps="";
@@ -32,19 +37,23 @@ public class FolderUtility {
 		return msgid;
 	}
 	public static Map<String, File> readFolder(String destinationPath) {
-		Map<String, File> fileMap = new TreeMap<String, File>(String.CASE_INSENSITIVE_ORDER);
+		Map<String, File> fileMap = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 		File destFileDir = new File(destinationPath);
-		File[] destFileArray = destFileDir.listFiles();
+		File[] destFileArray = destFileDir.listFiles();		
 		String destFileName = "";
 		try {
-			for(File destfile : destFileArray) {
-				destFileName = destfile.getName();
-				if( destfile.isDirectory() ) {//if xls file is there
-					fileMap.put(destFileName, destfile);
-				}//else
-			}//for
+			logger.info(myMarker,"destFileDir:: {}", destFileDir.getCanonicalPath());
+			logger.info(myMarker,"destFileArray:: {}", destFileArray.length);
+			if(destFileArray.length>0) {
+				for(File destfile : destFileArray) {
+					destFileName = destfile.getName();
+					if( destfile.isDirectory() ) {//if xls file is there
+						fileMap.put(destFileName, destfile);
+					}//else
+				}//for
+			}
 		}catch(Exception e) {
-			e.printStackTrace();
+			logger.error(myMarker,"Ex:::: {}", e.getMessage());
 		}//catch
 		return fileMap;
 	}//readFolder
@@ -53,7 +62,8 @@ public class FolderUtility {
 		boolean status = false;
 		File contentDir = null;
 		File destDir = null;
-		try {					
+		try {	
+			logger.info(myMarker,"Ex:::: {} {} {}", contentLocation,contentName,folderMap);
 			if( folderMap!=null && folderMap.get(contentName)!=null ) {			
 				contentDir = folderMap.get(contentName);										
 				destDir = new File(contentLocation);			
@@ -67,6 +77,7 @@ public class FolderUtility {
 			
 	    }catch(Exception e) {
 	    	e.printStackTrace();
+	    	logger.error(myMarker,"Ex:::: {}", e.getMessage());
 	    	status = false;	    	
 	    }finally {
 	    	contentDir=null;

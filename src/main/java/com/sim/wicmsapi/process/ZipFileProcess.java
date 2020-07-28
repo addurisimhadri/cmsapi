@@ -6,19 +6,21 @@ import java.io.FileOutputStream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.Marker;
+import org.slf4j.MarkerFactory;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.sim.wicmsapi.vo.UploadObject;
 
 public class ZipFileProcess {
 	private static final Logger logger = LoggerFactory.getLogger(ZipFileProcess.class);
-	
+	static Marker myMarker = MarkerFactory.getMarker("MYMARKER");
 	private ZipFileProcess() {
 		
 	}
-	public static String singleUpload(MultipartFile file,String UPLOADED_FOLDER, UploadObject uploadObject) {		
+	public static String singleUpload(MultipartFile file,String unZipLocation, UploadObject uploadObject) {		
 		String status="";
-		File dir = new File(UPLOADED_FOLDER);
+		File dir = new File(unZipLocation);
 		if (!dir.exists())
 			dir.mkdirs();
 		File uploadFile = new File(dir.getAbsolutePath()+ File.separator +file.getOriginalFilename());
@@ -32,7 +34,7 @@ public class ZipFileProcess {
 		} catch (Exception e) {
 			status = status +  "Failed to upload " + file.getOriginalFilename()+ " " + e.getMessage();
         }
-		logger.info("status::"+status);		
+		logger.info(myMarker,"status:: {}", status);		
 		return status;	
 	}
 

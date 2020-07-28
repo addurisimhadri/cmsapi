@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Hashtable;
 import java.util.Locale;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,11 +19,11 @@ import jxl.WorkbookSettings;
 
 public class XlSheetParser {
 	private static  Logger logger = LoggerFactory.getLogger(XlSheetParser.class);
-	public static Hashtable<String , ContentObject> init(InputStream inputStream) {		
-		Hashtable<String , ContentObject> contentObjects = new Hashtable<String , ContentObject>();
+	public static Map<String , ContentObject> init(InputStream inputStream) {		
+		Map<String , ContentObject> contentObjects = new Hashtable<String , ContentObject>();
 		InputStream fileInputStream = null;
 		try {
-			fileInputStream = inputStream;//new FileInputStream(new File(filePath));
+			fileInputStream = inputStream;
 			WorkbookSettings ws = null;
 			Workbook workbook = null;
 			Sheet s = null;
@@ -56,34 +57,29 @@ public class XlSheetParser {
 	contentObjects.remove("");
 		return contentObjects;
 	}
-	public static Hashtable<String , ContentObject> getHeadingFromXlsFile(Sheet sheet) {
+	public static Map<String , ContentObject> getHeadingFromXlsFile(Sheet sheet) {
 		ContentObject contentObject =null;
 		GameMetaContentObject gmcObject=null;
-		Hashtable<String , ContentObject> contentObj = new Hashtable<String , ContentObject>();
+		Map<String , ContentObject> contentObj = new Hashtable<String , ContentObject>();
 		int columnCount = sheet.getColumns();		
 		int rowsCount = sheet.getRows();
 		rowsCount = rowsCount - 1;
 		String title = "";
 		String contentName = "";
-		//logger.info("rowsCount::"+rowsCount+"|columnCount::"+columnCount);
 		for (int i = 0; i < rowsCount; i++) {
 			try {
 			contentObject = new ContentObject();
 			gmcObject=new GameMetaContentObject();
 			for (int j = 0; j < columnCount; j++) {
-				//logger.info("--->"+sheet.getCell(j, 0).getContents().trim());
 				if (sheet.getCell(j, 0).getContents().trim().equalsIgnoreCase("ContentName") ||sheet.getCell(j, 0).getContents().trim().equalsIgnoreCase("Content Name")) {
 					contentName = sheet.getCell(j, i + 1).getContents();
-					//logger.info("ContentName::"+contentName);
 					if(!contentName.equals("")){
-						logger.info("ContentName::"+contentName);
 						contentObject.setContentName(contentName.trim());
 						contentObject.setCpContentName(contentName.trim());
 					}
 				}
 				if (sheet.getCell(j, 0).getContents().trim().equalsIgnoreCase("Title")) {
 					title = sheet.getCell(j, i + 1).getContents();
-					//logger.info("title::"+title);
 					contentObject.setTitle(title);
 				}				
 				if (sheet.getCell(j, 0).getContents().trim().equalsIgnoreCase("Web Sample")) {
@@ -173,7 +169,6 @@ public class XlSheetParser {
 					gmcObject.setHomeLink(replacequote(sheet.getCell(j, i + 1).getContents().trim()));
 				}
 			}
-			//logger.info(""+contentObject);
 			if (contentObject != null) {
 				contentObject.setGmcObject(gmcObject);
 				contentObj.put(contentName.trim(),contentObject);
@@ -192,7 +187,7 @@ public class XlSheetParser {
 	}	
 	public static void main(String[] args) {
 		try {
-			Hashtable<String , ContentObject> contentObjects=XlSheetParser.init(new FileInputStream("F:\\Appanna old system backup as on 30-Mar-2015\\D Drive\\Content\\Games\\Action\\BorderwarDefencePatrol_SFC\\BorderwarDefencePatrol_SFC.xls"));
+			Map<String , ContentObject> contentObjects=XlSheetParser.init(new FileInputStream("F:\\Appanna old system backup as on 30-Mar-2015\\D Drive\\Content\\Games\\Action\\BorderwarDefencePatrol_SFC\\BorderwarDefencePatrol_SFC.xls"));
 			System.out.println(contentObjects);
 		} catch (Exception e) {
 			e.printStackTrace();

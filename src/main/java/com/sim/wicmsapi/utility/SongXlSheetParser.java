@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.util.Hashtable;
 import java.util.LinkedHashMap;
 import java.util.Locale;
+import java.util.Map;
 
 import com.sim.wicmsapi.vo.ContentObject;
 import com.sim.wicmsapi.vo.SongMetaContentObject;
@@ -15,8 +16,8 @@ import jxl.WorkbookSettings;
 
 
 public class SongXlSheetParser {
-	public static Hashtable<String ,LinkedHashMap<String,ContentObject >> init(InputStream inputStream) {		
-		Hashtable<String, LinkedHashMap<String,ContentObject >> contentObjects = new Hashtable<String, LinkedHashMap<String,ContentObject >>();
+	public static Map<String ,LinkedHashMap<String,ContentObject >> init(InputStream inputStream) {		
+		Map<String, LinkedHashMap<String,ContentObject >> contentObjects = new Hashtable<String, LinkedHashMap<String,ContentObject >>();
 		InputStream fileInputStream = null;		
 		try {
 			fileInputStream = inputStream;
@@ -54,10 +55,10 @@ public class SongXlSheetParser {
 		return contentObjects;
 	}//init
 
-	public static Hashtable<String ,LinkedHashMap<String,ContentObject >> getHeadingFromXlsFile(Sheet sheet) {
+	public static Map<String ,LinkedHashMap<String,ContentObject >> getHeadingFromXlsFile(Sheet sheet) {
 		ContentObject contentObject =null;
 		SongMetaContentObject smcObject=null;
-		Hashtable<String ,LinkedHashMap<String,ContentObject >> contentObj = new Hashtable<String ,LinkedHashMap<String,ContentObject >>();
+		Map<String ,LinkedHashMap<String,ContentObject >> contentObj = new Hashtable<>();
 		LinkedHashMap<String,ContentObject > langContentObj = new LinkedHashMap<String,ContentObject >();
 		int columnCount = sheet.getColumns();		
 		int rowsCount = sheet.getRows();		
@@ -254,7 +255,7 @@ public class SongXlSheetParser {
 				if (langContentObj != null && isAnotherContent) {
 					contentObj.put(contentName.trim(),langContentObj);
 					langContentObj = null;
-					langContentObj = new LinkedHashMap<String,ContentObject >();
+					langContentObj = new LinkedHashMap<String,ContentObject>();
 					isAnotherContent = false;
 				}		
 				

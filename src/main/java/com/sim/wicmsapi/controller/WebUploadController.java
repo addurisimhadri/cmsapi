@@ -1,10 +1,14 @@
 package com.sim.wicmsapi.controller;
 
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.Marker;
+import org.slf4j.MarkerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -32,11 +36,12 @@ import com.sim.wicmsapi.vo.UploadObject;
 @RequestMapping(value ="/web")
 public class WebUploadController {
 	private static final Logger logger = LoggerFactory.getLogger(WebUploadController.class);
+	static Marker myMarker = MarkerFactory.getMarker("MYMARKER");
 	@Value("${upload.unziplocation}")
-	public  String UPLOADED_FOLDER;	
+	public  String unZipLocation;	
 	
 	@Value("${upload.destfolder}")
-	public  String DEST_FOLDER;	
+	public  String destFolder;	
 	
 	@Autowired
 	ContentTypeService  contentTypeService;
@@ -59,7 +64,7 @@ public class WebUploadController {
 	@PostMapping(value = "/upload")
 	public ApiResponse<Void> uploadSingleFile(@RequestParam("contentId") Integer contentId,@RequestParam("cpId") Integer cpId,@RequestParam("zipFile") MultipartFile file) {
 		String status="";
-		ContentType contentType=new ContentType();;
+		ContentType contentType=new ContentType();
 			if (!file.isEmpty()) {				
 				try {
 				 String folder="action";
@@ -71,10 +76,10 @@ public class WebUploadController {
 					uploadObject.setCtId(contentId);
 					uploadObject.setCpId(cpId);
 					uploadObject.setCtName(contentType.getContentName());
-					uploadObject.setSrcDir(UPLOADED_FOLDER);
+					uploadObject.setSrcDir(unZipLocation);
 					uploadObject.setFolder(folder);					
 					
-					String destpath=DEST_FOLDER+File.separator+contentType.getContentName();
+					String destpath=destFolder+File.separator+contentType.getContentName();
 					uploadObject.setDestDir(destpath);
 										
 					switch (contentType.getContentId()) {			
@@ -86,16 +91,27 @@ public class WebUploadController {
 						 * content upload to Zip location
 						 */
 						
-						status=ZipFileProcess.singleUpload(file, UPLOADED_FOLDER,uploadObject);
+						status=ZipFileProcess.singleUpload(file, unZipLocation,uploadObject);
 						/*
 						 * Content Processing
 						 */
 						ContentProcess.contentProcess(uploadObject,contentService, contentTypeService,gameMetaService);
+						
+						/*
+						 * ZipFile Name delete from unZiplocation
+						 */
+						String uploadExtractLoc = uploadObject.getSrcDir();
+						if(!uploadExtractLoc.endsWith(File.separator)) uploadExtractLoc = uploadExtractLoc+File.separator;
+						if( new File(uploadExtractLoc+uploadObject.getZipFileName()).exists() ) {
+							String str=uploadExtractLoc+uploadObject.getZipFileName();							
+							logger.info(myMarker, "{} is Deleted",str);
+							org.apache.commons.io.FileUtils.deleteDirectory( new File(uploadExtractLoc+uploadObject.getZipFileName()) );
+							
+						}	
 						File zipfile=new File(uploadObject.getZipFilePath());
-						if(zipfile.exists()) {
-							logger.info(zipfile.getName()+" Zip file Deleted");
-							zipfile.delete();
-						}
+						Files.delete(Paths.get(uploadObject.getZipFilePath()));
+						logger.info(myMarker," Zip file Deleted {} ",zipfile.getName());
+												
 						break;
 					case 11:
 					case 13:
@@ -106,7 +122,7 @@ public class WebUploadController {
 						break;
 					}					
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.info(myMarker,"Ex:: {} ",e.getMessage());
 				}
 				
 			}else {
