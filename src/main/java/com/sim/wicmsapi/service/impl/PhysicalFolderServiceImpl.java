@@ -21,13 +21,18 @@ public class PhysicalFolderServiceImpl implements PhysicalFolderService {
 	}
 
 	@Override
-	public PhysicalFolder findByFolderName(String folderName) {
+	public Optional<PhysicalFolder> findByFolderName(String folderName) {
 		return physicalFolderRepository.findByFolderName(folderName);
 	}
 
 	@Override
 	public List<PhysicalFolder> findAll() {
 		return physicalFolderRepository.findAll();
+	}
+
+	@Override
+	public PhysicalFolder save(PhysicalFolder physicalFolder) {
+		return physicalFolderRepository.save(physicalFolder);
 	}
 
 }

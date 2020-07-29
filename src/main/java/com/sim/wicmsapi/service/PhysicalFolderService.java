@@ -8,7 +8,8 @@ import com.sim.wicmsapi.entity.PhysicalFolder;
 public interface PhysicalFolderService {
 	
 	Optional<PhysicalFolder> findById(int id);
-	PhysicalFolder findByFolderName(String folderName);
+	Optional<PhysicalFolder> findByFolderName(String folderName);
 	List<PhysicalFolder> findAll();
+	PhysicalFolder save(PhysicalFolder physicalFolder);
 
 }
