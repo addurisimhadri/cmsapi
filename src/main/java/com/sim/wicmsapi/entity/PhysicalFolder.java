@@ -7,8 +7,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,8 +27,9 @@ public class PhysicalFolder {
 	private int id;
 	@Column(name="pf_folderName")
 	private String folderName;
-	@Column(name="pf_location")
-	@JsonIgnore
+	@Column(name="pf_ct_type_id")
+	private int contentTypeId;	
+	@Column(name="pf_location")	
 	private String location;
 	
 

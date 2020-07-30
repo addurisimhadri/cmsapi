@@ -1,5 +1,6 @@
 package com.sim.wicmsapi.dao;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,5 +12,6 @@ import com.sim.wicmsapi.entity.PhysicalFolder;
 public interface PhysicalFolderRepository extends JpaRepository<PhysicalFolder, Integer> {
 	
 	Optional<PhysicalFolder> findByFolderName(String folderName);
+	List<PhysicalFolder> findByContentTypeId(int contentTypeId);
 
 }

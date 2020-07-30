@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.sim.wicmsapi.entity.ContentType;
+import com.sim.wicmsapi.entity.PhysicalFolder;
 import com.sim.wicmsapi.process.ContentProcess;
 import com.sim.wicmsapi.process.ZipFileProcess;
 import com.sim.wicmsapi.service.ContentLangService;
@@ -27,6 +28,7 @@ import com.sim.wicmsapi.service.ContentProviderService;
 import com.sim.wicmsapi.service.ContentService;
 import com.sim.wicmsapi.service.ContentTypeService;
 import com.sim.wicmsapi.service.GameMetaService;
+import com.sim.wicmsapi.service.PhysicalFolderService;
 import com.sim.wicmsapi.service.SongMetaService;
 import com.sim.wicmsapi.vo.ApiResponse;
 import com.sim.wicmsapi.vo.UploadObject;
@@ -61,13 +63,18 @@ public class WebUploadController {
 	@Autowired
 	ContentLangService contentLangService;
 	
+	@Autowired
+	PhysicalFolderService physicalFolderService;
+	
+	
+	
 	@PostMapping(value = "/upload")
-	public ApiResponse<Void> uploadSingleFile(@RequestParam("contentId") Integer contentId,@RequestParam("cpId") Integer cpId,@RequestParam("zipFile") MultipartFile file) {
+	public ApiResponse<Void> uploadSingleFile(@RequestParam("contentId") Integer contentId,@RequestParam("cpId") Integer cpId,@RequestParam("pfId") Integer pfId,@RequestParam("zipFile") MultipartFile file) {
 		String status="";
 		ContentType contentType=new ContentType();
 			if (!file.isEmpty()) {				
 				try {
-				 String folder="action";
+					String folder="action";
 					UploadObject uploadObject=new UploadObject();
 					Optional<ContentType> contentTypeOp=contentTypeService.getContentType(contentId);
 					if(contentTypeOp.isPresent())
@@ -79,7 +86,15 @@ public class WebUploadController {
 					uploadObject.setSrcDir(unZipLocation);
 					uploadObject.setFolder(folder);					
 					
-					String destpath=destFolder+File.separator+contentType.getContentName();
+					PhysicalFolder physicalFolder=new PhysicalFolder();
+					Optional<PhysicalFolder> physicalFolderOP= physicalFolderService.findById(pfId);
+					if(physicalFolderOP.isPresent()) {
+						physicalFolder=physicalFolderOP.get();
+					}
+					
+					
+					//String destpath=destFolder+File.separator+contentType.getContentName();
+					String destpath=physicalFolder.getLocation();
 					uploadObject.setDestDir(destpath);
 										
 					switch (contentType.getContentId()) {			

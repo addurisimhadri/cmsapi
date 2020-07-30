@@ -16,7 +16,7 @@ import lombok.ToString;
 public class PhysicalFolderDTO {	
 	private int id;
 	private String folderName;
-	@JsonIgnore
+	private int contentTypeId;
 	private String location;
 	
 

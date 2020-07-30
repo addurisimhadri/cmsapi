@@ -35,4 +35,9 @@ public class PhysicalFolderServiceImpl implements PhysicalFolderService {
 		return physicalFolderRepository.save(physicalFolder);
 	}
 
+	@Override
+	public List<PhysicalFolder> getCtTypeFolders(int contentTypeId) {
+		return physicalFolderRepository.findByContentTypeId(contentTypeId);
+	}
+
 }

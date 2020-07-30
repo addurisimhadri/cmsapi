@@ -10,6 +10,7 @@ public interface PhysicalFolderService {
 	Optional<PhysicalFolder> findById(int id);
 	Optional<PhysicalFolder> findByFolderName(String folderName);
 	List<PhysicalFolder> findAll();
+	List<PhysicalFolder> getCtTypeFolders(int contentTypeId);
 	PhysicalFolder save(PhysicalFolder physicalFolder);
 
 }
