@@ -36,7 +36,7 @@ public class Content  implements Serializable {
 	@Id
 	@Column(name="c_ct_type_id")
 	private int ctTypeId;
-	@Column(name="c_pf_id",columnDefinition = "UNSIGNED INT(11)")
+	@Column(name="c_pf_id",columnDefinition = "INT(11) UNSIGNED", nullable = false)
 	@JsonIgnore
 	private int pfId;
 	@Column(name="c_name")

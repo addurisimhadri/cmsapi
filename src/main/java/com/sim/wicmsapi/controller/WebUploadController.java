@@ -93,9 +93,11 @@ public class WebUploadController {
 					}
 					
 					
-					//String destpath=destFolder+File.separator+contentType.getContentName();
 					String destpath=physicalFolder.getLocation();
 					uploadObject.setDestDir(destpath);
+					uploadObject.setPfId(physicalFolder.getId());
+					uploadObject.setCpName(physicalFolder.getFolderName());
+					
 										
 					switch (contentType.getContentId()) {			
 					case 31:

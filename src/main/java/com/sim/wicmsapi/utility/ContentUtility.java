@@ -38,6 +38,7 @@ public class ContentUtility {
 			content.setCtTypeId(contentType.getContentId());
 			content.setName(contentObject.getCpContentName());
 			content.setCpId(contentObject.getCpId());
+			content.setPfId(contentObject.getPfId());
 			content.setTitle(contentObject.getTitle());
 			content.setLanguage("English");
 			content.setGenre(contentObject.getGenre());
@@ -46,7 +47,7 @@ public class ContentUtility {
 			content.setSubCategory(contentObject.getSubCategory());
 			content.setBasePrice(contentObject.getPurchasePrice()+"");
 			content.setParentalRating(contentObject.getParentalRating());
-			content.setUploadSource("WEB");
+			content.setUploadSource(contentObject.getSource());
 			content.setUploadTimestamp(new Date());
 			content.setValidityFrom(contentObject.getValidFrom());
 			content.setValidityTo(contentObject.getValidTo());
