@@ -65,7 +65,7 @@ public class ContentProcess {
 						ContentObject contentObject = ht.get(contentName);						
 						contentObject.setCpId(uploadObject.getCpId());
 						contentObject.setPfId(uploadObject.getPfId());
-						
+						contentObject.setSubCategory(uploadObject.getCpName());
 						/*
 						 * We are checking the content available or not.
 						 */

@@ -3,25 +3,40 @@ package com.sim.wicmsapi.utility;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.Optional;
 
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.Marker;
+import org.slf4j.MarkerFactory;
+
+import com.sim.wicmsapi.entity.PhysicalFolder;
+import com.sim.wicmsapi.service.PhysicalFolderService;
+import com.sim.wicmsapi.vo.UploadObject;
 
 public class UploadUtility {
+	
 	private static final Logger logger = LoggerFactory.getLogger(UploadUtility.class);
+	static Marker myMarker = MarkerFactory.getMarker("MYMARKER");
+	private UploadUtility() {
+		
+	}
+	
 	
 	 public static void copyFile(String srcPath, String destPath){		 	
 	        try {
-	        	logger.info("srcPath"+srcPath+"|destPath::"+destPath);
+	        	String str="srcPath"+srcPath+"|destPath::"+destPath;
+	        	logger.info(myMarker," {} ",str);
 	        	copyDirectory(new File(srcPath), new File(destPath));
 			} catch (IOException e) {				
-				e.printStackTrace();
+				logger.error(myMarker, "Ex: {}", e.getMessage());
 			}
 	 }
 	 
 	 public static void copyFileIO(String srcPath, String destPath) throws IOException{
-		 logger.info("srcPath"+srcPath+"|destPath::"+destPath);
+		 String str="srcPath"+srcPath+"|destPath::"+destPath;
+		 logger.info(myMarker, " {} ",str);
 		 FileUtils.copyDirectory(new File(srcPath), new File(destPath));
 	 } 
 	 
@@ -41,6 +56,25 @@ public class UploadUtility {
         for (String child : source.list()) {
             copyDirectory(new File(source, child), new File(target, child));
         }
+	 }
+	 
+	 public static void setPhisicalFolder(int pfId, UploadObject uploadObject, PhysicalFolderService physicalFolderService) {
+		 
+		 try {
+			 PhysicalFolder physicalFolder=new PhysicalFolder();
+				Optional<PhysicalFolder> physicalFolderOP= physicalFolderService.findById(pfId);
+				if(physicalFolderOP.isPresent()) {
+					physicalFolder=physicalFolderOP.get();
+				}
+				
+				
+				String destpath=physicalFolder.getLocation();
+				uploadObject.setDestDir(destpath);
+				uploadObject.setPfId(physicalFolder.getId());
+				uploadObject.setCpName(physicalFolder.getFolderName());
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
 	 }
 	 
 	 

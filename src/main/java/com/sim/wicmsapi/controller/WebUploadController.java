@@ -30,6 +30,7 @@ import com.sim.wicmsapi.service.ContentTypeService;
 import com.sim.wicmsapi.service.GameMetaService;
 import com.sim.wicmsapi.service.PhysicalFolderService;
 import com.sim.wicmsapi.service.SongMetaService;
+import com.sim.wicmsapi.utility.UploadUtility;
 import com.sim.wicmsapi.vo.ApiResponse;
 import com.sim.wicmsapi.vo.UploadObject;
 
@@ -62,11 +63,9 @@ public class WebUploadController {
 	
 	@Autowired
 	ContentLangService contentLangService;
-	
+		
 	@Autowired
 	PhysicalFolderService physicalFolderService;
-	
-	
 	
 	@PostMapping(value = "/upload")
 	public ApiResponse<Void> uploadSingleFile(@RequestParam("contentId") Integer contentId,@RequestParam("cpId") Integer cpId,@RequestParam("pfId") Integer pfId,@RequestParam("zipFile") MultipartFile file) {
@@ -86,18 +85,7 @@ public class WebUploadController {
 					uploadObject.setSrcDir(unZipLocation);
 					uploadObject.setFolder(folder);					
 					
-					PhysicalFolder physicalFolder=new PhysicalFolder();
-					Optional<PhysicalFolder> physicalFolderOP= physicalFolderService.findById(pfId);
-					if(physicalFolderOP.isPresent()) {
-						physicalFolder=physicalFolderOP.get();
-					}
-					
-					
-					String destpath=physicalFolder.getLocation();
-					uploadObject.setDestDir(destpath);
-					uploadObject.setPfId(physicalFolder.getId());
-					uploadObject.setCpName(physicalFolder.getFolderName());
-					
+					UploadUtility.setPhisicalFolder(pfId, uploadObject, physicalFolderService);
 										
 					switch (contentType.getContentId()) {			
 					case 31:

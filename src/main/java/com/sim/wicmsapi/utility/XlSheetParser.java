@@ -60,7 +60,7 @@ public class XlSheetParser {
 	public static Map<String , ContentObject> getHeadingFromXlsFile(Sheet sheet) {
 		ContentObject contentObject =null;
 		GameMetaContentObject gmcObject=null;
-		Map<String , ContentObject> contentObj = new Hashtable<String , ContentObject>();
+		Map<String , ContentObject> contentObj = new Hashtable<>();
 		int columnCount = sheet.getColumns();		
 		int rowsCount = sheet.getRows();
 		rowsCount = rowsCount - 1;

@@ -24,9 +24,10 @@ public class FTPUploadUtility {
 	  public static final int GBYTE = MBYTE * KBYTE;
 	
 	public static	List<FTPUploadObject> getZipFileNames(File file) {
-		List<FTPUploadObject> ftpUploadObjects= new ArrayList<FTPUploadObject>();
+		List<FTPUploadObject> ftpUploadObjects= new ArrayList<>();
 		FTPUploadObject ftpUploadObject=null;
 		File[] listOfFiles = file.listFiles();
+		System.out.println("============================"+listOfFiles.length+"==============="+file.getAbsolutePath());
 		for(int j=0 ; j<listOfFiles.length ; j++) {
 			ftpUploadObject= new FTPUploadObject();
 			File file1 = listOfFiles[j];
@@ -40,6 +41,7 @@ public class FTPUploadUtility {
 			ftpUploadObject.setFileSize(fileSize);
 			ftpUploadObjects.add(ftpUploadObject);
 		}
+		System.out.println("====================================="+ftpUploadObjects);
 		return ftpUploadObjects;
 	}
 	/**

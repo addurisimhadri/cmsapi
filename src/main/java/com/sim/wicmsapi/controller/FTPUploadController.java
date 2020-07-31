@@ -66,12 +66,13 @@ public class FTPUploadController {
 	
 	@Autowired
 	ContentProcessFTPService contentProcessFTPService;
-	
+	 
 	@GetMapping(value = "/getZileFileNames/{ccpId}/{cctype}")
 	public List<FTPUploadObject> getZileFileNames(@PathVariable("ccpId") Integer cpId,@PathVariable("cctype") Integer contentId) {
 		ContentProvider contentProvider=contentProviderService.getContentProvider(cpId);
 		ContentType contentType=contentTypeService.getContentType(contentId).get();		
-		File file = new File(contentProvider.getServerFtpHome()+File.separator+contentType.getContentName().toUpperCase());		
+		//File file = new File(contentProvider.getServerFtpHome()+File.separator+contentType.getContentName().toUpperCase());
+		File file = new File("F:\\Practice\\ftp\\Samsung"+File.separator+contentType.getContentName().toUpperCase());
 		return FTPUploadUtility.getZipFileNames(file);
 	}
 	@PostMapping(value = "/upload")
