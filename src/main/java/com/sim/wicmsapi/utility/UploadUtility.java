@@ -73,7 +73,7 @@ public class UploadUtility {
 				uploadObject.setPfId(physicalFolder.getId());
 				uploadObject.setCpName(physicalFolder.getFolderName());
 		} catch (Exception e) {
-			// TODO: handle exception
+			logger.error(myMarker, "Ex:: {}", e.getMessage());
 		}
 	 }
 	 

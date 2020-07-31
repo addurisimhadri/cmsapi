@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,8 +29,11 @@ import com.sim.wicmsapi.service.ContentProviderService;
 import com.sim.wicmsapi.service.ContentService;
 import com.sim.wicmsapi.service.ContentTypeService;
 import com.sim.wicmsapi.service.GameMetaService;
+import com.sim.wicmsapi.service.PhysicalFolderService;
 import com.sim.wicmsapi.service.SongMetaService;
 import com.sim.wicmsapi.utility.FTPUploadUtility;
+import com.sim.wicmsapi.utility.UploadUtility;
+import com.sim.wicmsapi.vo.ApiResponse;
 import com.sim.wicmsapi.vo.FTPUploadObject;
 import com.sim.wicmsapi.vo.UploadObject;
 
@@ -66,6 +70,10 @@ public class FTPUploadController {
 	
 	@Autowired
 	ContentProcessFTPService contentProcessFTPService;
+	
+	@Autowired
+	PhysicalFolderService physicalFolderService;
+	
 	 
 	@GetMapping(value = "/getZileFileNames/{ccpId}/{cctype}")
 	public List<FTPUploadObject> getZileFileNames(@PathVariable("ccpId") Integer cpId,@PathVariable("cctype") Integer contentId) {
@@ -76,7 +84,7 @@ public class FTPUploadController {
 		return FTPUploadUtility.getZipFileNames(file);
 	}
 	@PostMapping(value = "/upload")
-	public String ftpUpload(@RequestParam("cctype") Integer contentId,@RequestParam("ccpId") Integer cpId,@RequestParam("zipFileNames") String[] zipFileNames) {
+	public  ApiResponse<Void> ftpUpload(@RequestParam("contentId") Integer contentId,@RequestParam("cpId") Integer cpId,@RequestParam("pfId") Integer pfId,@RequestParam("zipFileNames") String[] zipFileNames) {
 		String status="";					
 		try {
 			UploadObject uploadObject=new UploadObject();						
@@ -88,10 +96,11 @@ public class FTPUploadController {
 			uploadObject.setCpId(cpId);
 			uploadObject.setCtName(contentType.getContentName());
 			uploadObject.setSrcDir(UPLOADED_FOLDER);
+			UploadUtility.setPhisicalFolder(pfId, uploadObject, physicalFolderService);
 			Map<String, String> contentLangMap =contentLangService.getLangMap();
 			for (int i = 0; i < zipFileNames.length; i++) {
 				String zipFileName = zipFileNames[i];
-				String zipFilePath= contentProvider.getServerFtpHome()+File.separator+contentType.getContentName().toUpperCase()+File.separator+zipFileName;
+				String zipFilePath= "F:\\Practice\\ftp\\Samsung"+File.separator+contentType.getContentName().toUpperCase()+File.separator+zipFileName;
 				uploadObject.setZipFilePath(zipFilePath);
 				String zipFileName1  = zipFileName.substring(0,zipFileName.indexOf("zip")-1);
 				uploadObject.setZipFileName(zipFileName1);
@@ -132,7 +141,9 @@ public class FTPUploadController {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}			
-		return status;
+		//return status;
+		status="success";
+		return new ApiResponse<>(HttpStatus.CREATED.value(), status, null);
 	}
 	
 }
