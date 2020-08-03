@@ -96,4 +96,6 @@ public class Content  implements Serializable {
 	@Column(name="c_wml_sample")
 	private String wmlSample;
 	
+	
+	
 }

@@ -104,7 +104,7 @@ public class FTPUploadController {
 				uploadObject.setZipFilePath(zipFilePath);
 				String zipFileName1  = zipFileName.substring(0,zipFileName.indexOf("zip")-1);
 				uploadObject.setZipFileName(zipFileName1);
-				
+				uploadObject.setSource("FTP");
 				switch (contentType.getContentId()) {	
 				case 6:
 				case 7:

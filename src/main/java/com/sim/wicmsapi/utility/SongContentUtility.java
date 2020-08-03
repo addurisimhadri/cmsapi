@@ -2,6 +2,9 @@ package com.sim.wicmsapi.utility;
 
 import java.util.Date;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.sim.wicmsapi.entity.Content;
 import com.sim.wicmsapi.entity.ContentProcessFTP;
 import com.sim.wicmsapi.entity.ContentType;
@@ -10,10 +13,10 @@ import com.sim.wicmsapi.vo.ContentObject;
 import com.sim.wicmsapi.vo.UploadObject;
 
 public class SongContentUtility {
-	//private static final Logger logger = LoggerFactory.getLogger(SongContentUtility.class);
+	private static final Logger logger = LoggerFactory.getLogger(SongContentUtility.class);
 	public static Content storeSongContent(ContentObject contentObject,ContentType contentType,Content contentexists) {
 		Content content=new Content();
-		
+		logger.info("storeSongContent===============================");
 		try {
 			if(contentexists==null) {
 				content.setContId(contentType.getMaxId()+1);

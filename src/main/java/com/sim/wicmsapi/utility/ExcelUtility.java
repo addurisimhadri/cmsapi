@@ -39,8 +39,8 @@ public class ExcelUtility {
 		}
 		return hashtable;
 	}
-	public static Map<String ,LinkedHashMap<String,ContentObject >> songParseXsl(String zipFilePath )
-	{
+	public static Map<String ,LinkedHashMap<String,ContentObject >> songParseXsl(String zipFilePath ) {
+		logger.info(myMarker, "{}","songParseXsl");
 		Map<String ,LinkedHashMap<String,ContentObject >> hashtable = null ;
 		Enumeration<?> entries = null;
 		boolean status = false;
@@ -48,6 +48,7 @@ public class ExcelUtility {
 			entries  = zipFile.entries();
 			while(entries.hasMoreElements()) {
 				ZipEntry entry = (ZipEntry)entries.nextElement();
+				logger.info(myMarker, "{}",entry.getName());
 				if((entry.getName().endsWith(".xls") || entry.getName().endsWith(".xlsx")) && !(entry.getName().contains("devices")||entry.getName().contains("Devices"))) { 
 					status = true ;
 					hashtable = SongXlSheetParser.init(zipFile.getInputStream(entry));
@@ -58,7 +59,8 @@ public class ExcelUtility {
 		}
 		catch(Exception e)
 		{
-			logger.info(myMarker,"Ex:: {}",e.getMessage());
+			e.printStackTrace();
+			logger.error(myMarker,"Ex:: {}",e.getMessage());
 		}
 		finally
 		{

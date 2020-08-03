@@ -7,13 +7,16 @@ import java.util.Date;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.Marker;
+import org.slf4j.MarkerFactory;
 
 public class DateUtility {
 	private static  Logger logger = LoggerFactory.getLogger(DateUtility.class);
+	static Marker myMarker = MarkerFactory.getMarker("MYMARKER");
 	/**
 	 * This function convert String to Timestamp
 	 */	
-	public static java.sql.Timestamp convertStringtots(String format,String text) {		
+	public static java.sql.Timestamp convertStringtoTimeStamp(String format,String text) {		
 		java.sql.Timestamp timestamp = null;
 		try{
 	        SimpleDateFormat dateFormat  = new SimpleDateFormat(format);
@@ -29,49 +32,48 @@ public class DateUtility {
 		java.sql.Timestamp timestamp = null;
 		String format="dd/MM/yyyy";
 		if(text.contains("-"))
-			format="dd-MM-yyyy";
-		if(text.length()!=format.length()) {
-			//text.substring(1, format.length()-1);
-		}
-		try{
-	        SimpleDateFormat dateFormat  = new SimpleDateFormat(format);
-		    java.util.Date parsedDate    = dateFormat.parse(text);
-			timestamp = new java.sql.Timestamp(parsedDate.getTime());
-		}
-		catch(Exception e ) {
-			logger.error("text::"+text+"Ex::"+e);
-			e.printStackTrace();	
+			format="dd-MM-yyyy";		
+		if(text.equals("")) {
+			timestamp = new java.sql.Timestamp(new Date().getTime());
+		}else {
+			try{
+		        SimpleDateFormat dateFormat  = new SimpleDateFormat(format);
+			    java.util.Date parsedDate    = dateFormat.parse(text);
+				timestamp = new java.sql.Timestamp(parsedDate.getTime());
+			}
+			catch(Exception e ) {
+				logger.error(myMarker, " {} {} ",e.getMessage(), text);
+			}
 		}
 		return timestamp; 
     }
-	public static String getValidTo(String valid_to) {
+	public static String getValidTo(String validTo) {
 		SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
 		Calendar c11=Calendar.getInstance();
 		try {
-			Date valid_Date = formatter.parse(valid_to);			
-			c11.setTime(valid_Date);
-			int max_year=c11.get(Calendar.YEAR);
+			Date validDate = formatter.parse(validTo);			
+			c11.setTime(validDate);
+			int maxYear=c11.get(Calendar.YEAR);
 			int yearDiff=c11.get(Calendar.YEAR)-2038;		
-			if(max_year>=2038){		
+			if(maxYear>=2038){		
 				c11.add(Calendar.YEAR, -yearDiff);
 				c11.set(Calendar.MONTH, 0);
 				c11.set(Calendar.DATE, 1);
-				Date validDate=c11.getTime();
-				valid_to = formatter.format(validDate);
-				logger.info("valid_to in xsl parser :"+valid_to+"|valid_Date:"+valid_Date);	
+				Date validDate1=c11.getTime();
+				validTo = formatter.format(validDate1);
+				logger.info(myMarker,"valid_to in xsl parser :{} valid_Date: {} ",validTo,validDate1);	
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
-			logger.info("valid_to::"+valid_to+"|Ex:"+e);
+			logger.error(myMarker,"valid_to:: {} |Ex: {} ",validTo,e.getMessage());
 		}		
-		return valid_to;		
+		return validTo;		
 	}
 	
 	public static void main(String[] args) {
 		
 		String text="20/11/2018";
 		Timestamp ts= convertStringtoTS(text);
-		System.out.println(ts);
+		logger.info(myMarker, " {} ",ts);
 	}
 
 }

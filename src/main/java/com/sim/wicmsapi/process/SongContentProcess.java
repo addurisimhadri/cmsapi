@@ -29,7 +29,7 @@ import com.sim.wicmsapi.vo.ContentObject;
 import com.sim.wicmsapi.vo.UploadObject;
 
 public class SongContentProcess {
-	private static final Logger logger = LoggerFactory.getLogger(ContentProcess.class);
+	private static final Logger logger = LoggerFactory.getLogger(SongContentProcess.class);
 	
 	private SongContentProcess() {
 		
@@ -96,8 +96,10 @@ public class SongContentProcess {
 									metaLanguages = StringUtils.join(langIt, ", ");
 									while(it.hasNext()) {
 										metaLanguage = (String)it.next();
+										logger.info("Processing the content Folder :"+metaLanguage);
 										if(!metaLanguage.equals("")  &&  contentLangMap.containsValue(metaLanguage.replace(metaLanguage.charAt(0), Character.toUpperCase(metaLanguage.charAt(0)))) ) {											
 											ContentObject contentObject = (ContentObject)langHt.get(metaLanguage);
+											logger.info("Processing the content Folder :"+contentObject);
 											if(contentObject != null) {
 												Pattern pattern = Pattern.compile("[^A-Za-z0-9_]");
 												Matcher matcher = pattern.matcher(contentObject.getContentName());

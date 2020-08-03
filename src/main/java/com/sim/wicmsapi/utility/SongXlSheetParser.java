@@ -1,11 +1,17 @@
 package com.sim.wicmsapi.utility;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Hashtable;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Marker;
+import org.slf4j.MarkerFactory;
 
 import com.sim.wicmsapi.vo.ContentObject;
 import com.sim.wicmsapi.vo.SongMetaContentObject;
@@ -16,6 +22,8 @@ import jxl.WorkbookSettings;
 
 
 public class SongXlSheetParser {
+	private static final Logger logger = LoggerFactory.getLogger(SongXlSheetParser.class);
+	static Marker myMarker = MarkerFactory.getMarker("MYMARKER");
 	public static Map<String ,LinkedHashMap<String,ContentObject >> init(InputStream inputStream) {		
 		Map<String, LinkedHashMap<String,ContentObject >> contentObjects = new Hashtable<String, LinkedHashMap<String,ContentObject >>();
 		InputStream fileInputStream = null;		
@@ -30,6 +38,7 @@ public class SongXlSheetParser {
 				ws.setLocale(new Locale("en", "EN"));
 				workbook = Workbook.getWorkbook(fileInputStream, ws);
 				totalSheet = workbook.getNumberOfSheets();
+				logger.info(myMarker, "total sheets {} ",totalSheet);
 				if (totalSheet > 0) {					
 					for (int j = 0; j < totalSheet; j++) {
 						
@@ -56,6 +65,7 @@ public class SongXlSheetParser {
 	}//init
 
 	public static Map<String ,LinkedHashMap<String,ContentObject >> getHeadingFromXlsFile(Sheet sheet) {
+		logger.info(myMarker, "total sheets getHeadingFromXlsFile");
 		ContentObject contentObject =null;
 		SongMetaContentObject smcObject=null;
 		Map<String ,LinkedHashMap<String,ContentObject >> contentObj = new Hashtable<>();
@@ -67,6 +77,7 @@ public class SongXlSheetParser {
 		String contentName = "";
 		String metaLanguage = "";
 		boolean isAnotherContent = false;
+		logger.info(myMarker, " rows {}  columns {}",rowsCount,columnCount);
 		try {
 			for(int i = 0; i < rowsCount; i++) {				
 				contentObject = new ContentObject();
@@ -249,6 +260,7 @@ public class SongXlSheetParser {
 					if(!metaLanguage.trim().equals("")) {
 						contentObject.setSmcObject(smcObject);
 						langContentObj.put(metaLanguage.trim(), contentObject);
+						logger.info(myMarker, " {} ",contentObject);
 					}
 					contentObject = null;
 				}
@@ -276,10 +288,10 @@ public class SongXlSheetParser {
 	}//replace quote
 
 	public static void main(String[] args) {
-	/*	try {
-			MyMusicXlSheetParser xlReader = new MyMusicXlSheetParser();
-			xlReader
-					.init("C:/Documents and Settings/rajesh/Desktop/ftp/test.xls");
+		/*try {
+			SongXlSheetParser xlReader = new SongXlSheetParser();
+			xlReader.init(new FileInputStream("F:\\Appanna old system backup as on 30-Mar-2015\\D Drive\\Content\\Wallpapers\\Space\\Ravangram.xls"));
+			xlReader.init(new FileInputStream("F:\\Appanna old system backup as on 30-Mar-2015\\D Drive\\Content\\SFC\\NuvvaNuvva\\NuvvaNuvva1.xls"));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}*/
