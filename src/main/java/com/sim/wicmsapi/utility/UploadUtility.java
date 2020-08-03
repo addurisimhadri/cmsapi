@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Optional;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
@@ -65,9 +67,7 @@ public class UploadUtility {
 				Optional<PhysicalFolder> physicalFolderOP= physicalFolderService.findById(pfId);
 				if(physicalFolderOP.isPresent()) {
 					physicalFolder=physicalFolderOP.get();
-				}
-				
-				
+				}			
 				String destpath=physicalFolder.getLocation();
 				uploadObject.setDestDir(destpath);
 				uploadObject.setPfId(physicalFolder.getId());
@@ -76,6 +76,31 @@ public class UploadUtility {
 			logger.error(myMarker, "Ex:: {}", e.getMessage());
 		}
 	 }
+	 public static boolean verifyZipContent(String zipFilePath , String folderName) {
+				boolean status = false;
+				File f = null;
+				ZipEntry entry = null;
+				try( ZipFile zipFile = new ZipFile(zipFilePath);)	{					
+					String zipFilePath1 = zipFile.getName();
+					f = new File(zipFilePath1);
+					String zipFileName = f.getName();				
+					zipFileName = zipFileName.substring(0,zipFileName.indexOf("zip")-1);
+					String zipEntry = zipFileName+"/"+folderName;
+					logger.info(myMarker,"zipEntry {} ",zipEntry);
+					entry = zipFile.getEntry(zipEntry);
+					if(entry != null)
+						status = true;
+				}
+				catch(Exception e) {
+					logger.error(myMarker, "Ex: {} ", e.getMessage());
+					e.printStackTrace();
+				}
+				finally{
+					if(f!=null)f=null;
+					if(entry!=null)entry=null;
+				}
+				return status;
+		}
 	 
 	 
 }

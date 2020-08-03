@@ -1,8 +1,6 @@
 package com.sim.wicmsapi.process;
 
 import java.io.File;
-import java.util.Enumeration;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -13,6 +11,8 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.Marker;
+import org.slf4j.MarkerFactory;
 
 import com.sim.wicmsapi.entity.Content;
 import com.sim.wicmsapi.entity.ContentProcessFTP;
@@ -30,7 +30,7 @@ import com.sim.wicmsapi.vo.UploadObject;
 
 public class SongContentProcess {
 	private static final Logger logger = LoggerFactory.getLogger(SongContentProcess.class);
-	
+	static Marker myMarker = MarkerFactory.getMarker("MYMARKER");
 	private SongContentProcess() {
 		
 	}
@@ -48,10 +48,8 @@ public class SongContentProcess {
 			ht= ExcelUtility.songParseXsl(zipFilePath);
 			
 			if( ht != null && ht.size() >= 1) {
-				String appendFolderName= FolderUtility.getFolderString();
+				String appendFolderName="";
 				Set<String> keys = ht.keySet();
-				int updatedCount = 1; 
-				int maxupdateCount=65536;
 				Iterator<String> keyIt=keys.iterator();
 				while(keyIt.hasNext()) {
 					String contentName =  keyIt.next();
@@ -64,16 +62,12 @@ public class SongContentProcess {
 						Content contentexist= contentService.findContent(contentName,uploadObject.getCpId(), contentType.getContentId());
 						String destinationPathTemp="";
 						if(contentexist==null) {
-							if(updatedCount%maxupdateCount==0)
-							{
-								appendFolderName= FolderUtility.getFolderString();
-							}
+							appendFolderName= FolderUtility.getFolderString();							
 							destinationPathTemp=destpath.endsWith(File.separator)?destpath+uploadObject.getCpId()+File.separator+appendFolderName:destpath+File.separator+uploadObject.getCpId()+File.separator+appendFolderName;
 						}else {
-							updatedCount--;
 							destinationPathTemp=destpath.endsWith(File.separator)?destpath+contentexist.getLocation().replaceAll(File.separator+contentName,""):destpath+File.separator+contentexist.getLocation().replaceAll(File.separator+contentName,"");
 						}
-						logger.info("destinationPathTemp "+destinationPathTemp);
+						logger.info(myMarker,"destinationPathTemp {} ",destinationPathTemp);
 						File destFile1 = new File(destinationPathTemp);
 						if(!destFile1.exists()) {
 							destFile1.mkdirs();						
@@ -88,18 +82,15 @@ public class SongContentProcess {
 							if(file1.isDirectory()) {
 								langHt =ht.get(file1.getName());
 								if(langHt != null) {
-									logger.info("Processing the content Folder :"+file1.getName());
 									String metaLanguage = "";
 									Set<String> langEntries = langHt.keySet();		
 									Iterator<String> it = langEntries.iterator();									
 									Iterator<String> langIt = langEntries.iterator();
 									metaLanguages = StringUtils.join(langIt, ", ");
 									while(it.hasNext()) {
-										metaLanguage = (String)it.next();
-										logger.info("Processing the content Folder :"+metaLanguage);
+										metaLanguage = (String)it.next();										
 										if(!metaLanguage.equals("")  &&  contentLangMap.containsValue(metaLanguage.replace(metaLanguage.charAt(0), Character.toUpperCase(metaLanguage.charAt(0)))) ) {											
 											ContentObject contentObject = (ContentObject)langHt.get(metaLanguage);
-											logger.info("Processing the content Folder :"+contentObject);
 											if(contentObject != null) {
 												Pattern pattern = Pattern.compile("[^A-Za-z0-9_]");
 												Matcher matcher = pattern.matcher(contentObject.getContentName());
@@ -114,9 +105,13 @@ public class SongContentProcess {
 													}//if
 													contentObject.setCpId(uploadObject.getCpId());
 													contentObject.setMetaLanguages(metaLanguages);
+													contentObject.setSource(uploadObject.getSource());
+													contentObject.setCategory(uploadObject.getCtName());
+													contentObject.setSubCategory(uploadObject.getCpName());
 													contentObject.setLocation(uploadObject.getCpId()+File.separator+appendFolderName+File.separator+contentObject.getContentName());
 													if(metaLanguage.equalsIgnoreCase("English")) {
 														Content content=SongContentUtility.storeSongContent(contentObject, contentType, contentexist);
+														logger.info("Ex:: "+content);
 														content=contentService.save(content);
 														SongMeta songMeta=SongContentUtility.storeSongMetaContent(contentObject, content);
 														songMetaService.save(songMeta);

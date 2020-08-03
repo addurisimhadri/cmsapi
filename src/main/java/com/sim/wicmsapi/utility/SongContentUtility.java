@@ -26,6 +26,7 @@ public class SongContentUtility {
 				content.setContId(contentexists.getContId());
 				content.setLocation(contentexists.getLocation());
 			}
+			content.setPfId(contentObject.getPfId());
 			content.setCtTypeId(contentType.getContentId());
 			content.setName(contentObject.getCpContentName());
 			content.setCpId(contentObject.getCpId());
@@ -37,11 +38,11 @@ public class SongContentUtility {
 			content.setSubCategory(contentObject.getSubCategory());
 			content.setBasePrice(contentObject.getPurchasePrice()+"");
 			content.setParentalRating(contentObject.getParentalRating());
-			content.setUploadSource("WEB");
+			content.setUploadSource(contentObject.getSource());
 			content.setUploadTimestamp(new Date());
 			content.setValidityFrom(contentObject.getValidFrom());
 			content.setValidityTo(contentObject.getValidTo());
-			content.setStatus("-1");
+			content.setStatus("1");
 			content.setSampleName(contentObject.getWebSample());
 			content.setXhtmlSample(contentObject.getWapSample());
 			content.setWmlSample(contentObject.getWmlSample());
