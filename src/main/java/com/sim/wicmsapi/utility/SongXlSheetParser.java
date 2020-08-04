@@ -1,8 +1,8 @@
 package com.sim.wicmsapi.utility;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.LinkedHashMap;
 import java.util.Locale;
@@ -26,6 +26,7 @@ public class SongXlSheetParser {
 	static Marker myMarker = MarkerFactory.getMarker("MYMARKER");
 	public static Map<String ,LinkedHashMap<String,ContentObject >> init(InputStream inputStream) {		
 		Map<String, LinkedHashMap<String,ContentObject >> contentObjects = new Hashtable<String, LinkedHashMap<String,ContentObject >>();
+		Map<String , ContentObject> contentObj = new HashMap<>();
 		InputStream fileInputStream = null;		
 		try {
 			fileInputStream = inputStream;

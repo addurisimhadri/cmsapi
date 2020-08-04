@@ -3,6 +3,20 @@ package com.sim.wicmsapi.entity;
 import java.io.Serializable;
 import java.util.Objects;
 
+import javax.persistence.Embeddable;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+
+@Setter
+@Getter
+@ToString
+@AllArgsConstructor
+@NoArgsConstructor
+@Embeddable
 public class GameContentId implements Serializable {
 	
 	/**
@@ -12,18 +26,7 @@ public class GameContentId implements Serializable {
 	
 	private int gmId;
 	private int contentId;
-	public int getGmId() {
-		return gmId;
-	}
-	public void setGmId(int gmId) {
-		this.gmId = gmId;
-	}
-	public int getContentId() {
-		return contentId;
-	}
-	public void setContentId(int contentId) {
-		this.contentId = contentId;
-	}
+	
 	
 	@Override
     public int hashCode() {

@@ -3,6 +3,20 @@ package com.sim.wicmsapi.entity;
 import java.io.Serializable;
 import java.util.Objects;
 
+import javax.persistence.Embeddable;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+
+@Setter
+@Getter
+@ToString
+@AllArgsConstructor
+@NoArgsConstructor
+@Embeddable
 public class SongContentId implements Serializable {
 	
 	/**
@@ -13,18 +27,6 @@ public class SongContentId implements Serializable {
 	private int smId;
 	private int contentTypeId;
 	
-	public int getSmId() {
-		return smId;
-	}
-	public void setSmId(int smId) {
-		this.smId = smId;
-	}
-	public int getContentTypeId() {
-		return contentTypeId;
-	}
-	public void setContentTypeId(int contentTypeId) {
-		this.contentTypeId = contentTypeId;
-	}
 	
 	
 	@Override

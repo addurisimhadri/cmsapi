@@ -23,7 +23,7 @@ public class ContentLangId implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private int Id;
+	private int id;
 	private String code;
 
 	

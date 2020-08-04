@@ -3,12 +3,15 @@ package com.sim.wicmsapi.utility;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Locale;
 import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.Marker;
+import org.slf4j.MarkerFactory;
 
 import com.sim.wicmsapi.vo.ContentObject;
 import com.sim.wicmsapi.vo.GameMetaContentObject;
@@ -19,8 +22,9 @@ import jxl.WorkbookSettings;
 
 public class XlSheetParser {
 	private static  Logger logger = LoggerFactory.getLogger(XlSheetParser.class);
+	static Marker myMarker = MarkerFactory.getMarker("MYMARKER");
 	public static Map<String , ContentObject> init(InputStream inputStream) {		
-		Map<String , ContentObject> contentObjects = new Hashtable<String , ContentObject>();
+		Map<String , ContentObject> contentObjects = new HashMap<>();
 		InputStream fileInputStream = null;
 		try {
 			fileInputStream = inputStream;
@@ -41,11 +45,11 @@ public class XlSheetParser {
 				contentObjects = getHeadingFromXlsFile(s);
 	
 			} catch (IOException e) {
-				e.printStackTrace();
+				logger.info(myMarker," Ex:: {} ",e.getMessage());
 			}
 	
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.info(myMarker," Ex:: {} ",e.getMessage());
 		} finally {
 			try {
 			fileInputStream.close();
@@ -60,7 +64,7 @@ public class XlSheetParser {
 	public static Map<String , ContentObject> getHeadingFromXlsFile(Sheet sheet) {
 		ContentObject contentObject =null;
 		GameMetaContentObject gmcObject=null;
-		Map<String , ContentObject> contentObj = new Hashtable<>();
+		Map<String , ContentObject> contentObj = new HashMap<>();
 		int columnCount = sheet.getColumns();		
 		int rowsCount = sheet.getRows();
 		rowsCount = rowsCount - 1;
@@ -119,17 +123,17 @@ public class XlSheetParser {
 					contentObject.setValidFrom(DateUtility.convertStringtoTS(sheet.getCell(j, i + 1).getContents()));
 				}				
 				if (sheet.getCell(j, 0).getContents().trim().equalsIgnoreCase("Valid To")) {								
-					String valid_to=sheet.getCell(j, i + 1).getContents();
-					contentObject.setValidTo(DateUtility.convertStringtoTS(valid_to));
+					String validTo=sheet.getCell(j, i + 1).getContents();
+					contentObject.setValidTo(DateUtility.convertStringtoTS(validTo));
 				}				
 				if (sheet.getCell(j, 0).getContents().trim().equalsIgnoreCase("Rating")) {
-					int c_rating = 4;
+					int cRating = 4;
 					try{
-						c_rating = Integer.parseInt((sheet.getCell(j, i + 1).getContents()));
+						cRating = Integer.parseInt((sheet.getCell(j, i + 1).getContents()));
 					}catch(NumberFormatException ne){
-						c_rating = 4;
-					}c_rating = c_rating>99?99:c_rating;
-					contentObject.setRating(c_rating);
+						cRating = 4;
+					}cRating = cRating>99?99:cRating;
+					contentObject.setRating(cRating);
 				}
 				if (sheet.getCell(j, 0).getContents().equalsIgnoreCase("Mood"))	{
 					try {
