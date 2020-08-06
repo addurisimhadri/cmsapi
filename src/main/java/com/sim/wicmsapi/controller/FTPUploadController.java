@@ -79,8 +79,7 @@ public class FTPUploadController {
 	public List<FTPUploadObject> getZileFileNames(@PathVariable("ccpId") Integer cpId,@PathVariable("cctype") Integer contentId) {
 		ContentProvider contentProvider=contentProviderService.getContentProvider(cpId);
 		ContentType contentType=contentTypeService.getContentType(contentId).get();		
-		//File file = new File(contentProvider.getServerFtpHome()+File.separator+contentType.getContentName().toUpperCase());
-		File file = new File("F:\\Practice\\ftp\\Samsung"+File.separator+contentType.getContentName().toUpperCase());
+		File file = new File(contentProvider.getServerFtpHome()+File.separator+contentType.getContentName().toUpperCase());
 		return FTPUploadUtility.getZipFileNames(file);
 	}
 	@PostMapping(value = "/upload")
@@ -100,7 +99,7 @@ public class FTPUploadController {
 			Map<String, String> contentLangMap =contentLangService.getLangMap();
 			for (int i = 0; i < zipFileNames.length; i++) {
 				String zipFileName = zipFileNames[i];
-				String zipFilePath= "F:\\Practice\\ftp\\Samsung"+File.separator+contentType.getContentName().toUpperCase()+File.separator+zipFileName;
+				String zipFilePath= contentProvider.getServerFtpHome()+File.separator+contentType.getContentName().toUpperCase()+File.separator+zipFileName;
 				uploadObject.setZipFilePath(zipFilePath);
 				String zipFileName1  = zipFileName.substring(0,zipFileName.indexOf("zip")-1);
 				uploadObject.setZipFileName(zipFileName1);

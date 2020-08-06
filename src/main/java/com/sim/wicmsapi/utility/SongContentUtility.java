@@ -1,5 +1,6 @@
 package com.sim.wicmsapi.utility;
 
+import java.io.File;
 import java.util.Date;
 
 import org.slf4j.Logger;
@@ -88,20 +89,21 @@ public class SongContentUtility {
 		
 		ContentProcessFTP contentProcessFTP=new ContentProcessFTP();
 		try {
-			//contentProcessFTP.setCpfId(content.getcId());
+			contentProcessFTP.setCpfContId(content.getContId());
 			contentProcessFTP.setContentTypeId(content.getCtTypeId());
-			contentProcessFTP.setPfId(0);
+			contentProcessFTP.setPfId(uploadObject.getPfId());
 			contentProcessFTP.setTitle(content.getTitle());
 			contentProcessFTP.setProcessId(TransId.getCpTransId());
 			contentProcessFTP.setCpContentName(content.getName());
 			contentProcessFTP.setCpId(content.getCpId());
 			contentProcessFTP.setLastUpdatedTimestamp(new Date());
 			contentProcessFTP.setLocation(content.getLocation());
-			contentProcessFTP.setProcessStatus("Success");
-			contentProcessFTP.setProcessZipfile(uploadObject.getZipFileName());
+			contentProcessFTP.setProcessStatus("In Queue");
+			File file=new File(uploadObject.getZipFilePath());
+			contentProcessFTP.setProcessZipfile(file.getName());
 			contentProcessFTP.setUploadTimestamp(content.getUploadTimestamp());
-			contentProcessFTP.setSubmitStatus("In Queue");
-			contentProcessFTP.setUploadType("FTP");
+			contentProcessFTP.setSubmitStatus("Completed");
+			contentProcessFTP.setUploadType(uploadObject.getSource());
 			
 			
 		} catch (Exception e) {

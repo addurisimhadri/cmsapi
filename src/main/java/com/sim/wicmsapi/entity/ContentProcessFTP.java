@@ -32,7 +32,7 @@ public class ContentProcessFTP implements Serializable {
 	
 	@Id
 	@Column(name="cpf_c_id")
-	private  int cpfId;
+	private  int cpfContId;
 	@Id
 	@Column(name="cpf_ct_type_id")
 	private  int contentTypeId;

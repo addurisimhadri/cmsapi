@@ -25,19 +25,19 @@ public class ContentProcessFTPId implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	private  int cpfId;
+	private  int cpfContId;
 	private  int contentTypeId;
 	
 	@Override
     public int hashCode() {
-        return Objects.hash(getCpfId()+(getContentTypeId()));
+        return Objects.hash(getCpfContId()+(getContentTypeId()));
     }
 	@Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof ContentProcessFTP)) return false;
         ContentProcessFTP contentProcessFTP = (ContentProcessFTP) o;
-        return Objects.equals(getCpfId()+(getContentTypeId()), contentProcessFTP.getCpfId()+contentProcessFTP.getContentTypeId());
+        return Objects.equals(getCpfContId()+(getContentTypeId()), contentProcessFTP.getCpfContId()+contentProcessFTP.getContentTypeId());
     }
 	
 	

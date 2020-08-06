@@ -20,40 +20,6 @@ import ch.enterag.utils.zip.Zip64File;
 public class ZipUtility {
 	private static final Logger logger = LoggerFactory.getLogger(ZipUtility.class);
 	static Marker myMarker = MarkerFactory.getMarker("MYMARKER");
-	/*private static void unzip(String zipFilePath, String destDir) {
-        File dir = new File(destDir);
-        // create output directory if it doesn't exist
-        if(!dir.exists()) dir.mkdirs();
-        FileInputStream fis;
-        //buffer for read and write data to file
-        byte[] buffer = new byte[1024];
-        try {
-            fis = new FileInputStream(zipFilePath);
-            ZipInputStream zis = new ZipInputStream(fis);
-            ZipEntry ze = zis.getNextEntry();
-            while(ze != null){
-                String fileName = ze.getName();
-                File newFile = new File(destDir + File.separator + fileName);
-                System.out.println("Unzipping to "+newFile.getAbsolutePath());
-                //create directories for sub directories in zip
-                new File(newFile.getParent()).mkdirs();
-                FileOutputStream fos = new FileOutputStream(newFile);
-                int len;
-                while ((len = zis.read(buffer)) > 0) {
-                	fos.write(buffer, 0, len);
-                }
-                fos.close();         
-                zis.closeEntry();
-                ze = zis.getNextEntry();
-            }
-            zis.closeEntry();
-            zis.close();
-            fis.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        
-    }*/
 	public static boolean extractZipContentWithZip64File(String absolutePath ,String contentLocation ,String contentName) {
 		boolean status = true;
 		File f = null;

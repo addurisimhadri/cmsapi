@@ -47,7 +47,7 @@ public class SongContentProcess {
 			 */
 			ht= ExcelUtility.songParseXsl(zipFilePath);
 			
-			if( ht != null && ht.size() >= 1) {
+			if( ht != null && ht.size() >= 1) { 
 				String appendFolderName="";
 				Set<String> keys = ht.keySet();
 				Iterator<String> keyIt=keys.iterator();
@@ -65,7 +65,7 @@ public class SongContentProcess {
 							appendFolderName= FolderUtility.getFolderString();							
 							destinationPathTemp=destpath.endsWith(File.separator)?destpath+uploadObject.getCpId()+File.separator+appendFolderName:destpath+File.separator+uploadObject.getCpId()+File.separator+appendFolderName;
 						}else {
-							destinationPathTemp=destpath.endsWith(File.separator)?destpath+contentexist.getLocation().replaceAll(File.separator+contentName,""):destpath+File.separator+contentexist.getLocation().replaceAll(File.separator+contentName,"");
+							destinationPathTemp=destpath.endsWith(File.separator)?destpath+contentexist.getLocation().replace(File.separator+contentName,""):destpath+File.separator+contentexist.getLocation().replace(File.separator+contentName,"");
 						}
 						logger.info(myMarker,"destinationPathTemp {} ",destinationPathTemp);
 						File destFile1 = new File(destinationPathTemp);
@@ -108,6 +108,7 @@ public class SongContentProcess {
 													contentObject.setSource(uploadObject.getSource());
 													contentObject.setCategory(uploadObject.getCtName());
 													contentObject.setSubCategory(uploadObject.getCpName());
+													contentObject.setPfId(uploadObject.getPfId());
 													contentObject.setLocation(uploadObject.getCpId()+File.separator+appendFolderName+File.separator+contentObject.getContentName());
 													if(metaLanguage.equalsIgnoreCase("English")) {
 														Content content=SongContentUtility.storeSongContent(contentObject, contentType, contentexist);
