@@ -95,6 +95,8 @@ public class FTPUploadController {
 			uploadObject.setCpId(cpId);
 			uploadObject.setCtName(contentType.getContentName());
 			uploadObject.setSrcDir(UPLOADED_FOLDER);
+			String destpath=DEST_FOLDER+File.separator+contentType.getContentName();
+			uploadObject.setDestDir(destpath);				
 			UploadUtility.setPhisicalFolder(pfId, uploadObject, physicalFolderService);
 			Map<String, String> contentLangMap =contentLangService.getLangMap();
 			for (int i = 0; i < zipFileNames.length; i++) {
@@ -135,8 +137,7 @@ public class FTPUploadController {
 				}	
 			}	
 			logger.info("uploadObject::"+uploadObject+"|lenngth::"+zipFileNames.length);				
-			String destpath=DEST_FOLDER+File.separator+contentType.getContentName();
-			uploadObject.setDestDir(destpath);				
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}			
