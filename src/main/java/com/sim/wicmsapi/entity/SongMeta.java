@@ -64,6 +64,8 @@ public class SongMeta implements Serializable {
 	private String contentOwner;
 	@Column(name="sm_production_countries")
 	private String productionCountries;
+	@Column(name="sm_app_preview")
+	private String appPreview;	
 	@Column(name="sm_artist")
 	private String artist;
 	@Column(name="sm_meta_languages")

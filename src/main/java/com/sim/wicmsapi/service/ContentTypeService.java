@@ -11,4 +11,5 @@ public interface ContentTypeService {
 	public List<ContentType> getCTs();
 	public ContentType save(ContentType contentType);
 	public List<ContentType> getCTs(long ctTypeId,String active);
+	public ContentType getCType(int contentId);
 }

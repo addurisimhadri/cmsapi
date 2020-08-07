@@ -12,5 +12,6 @@ public interface PhysicalFolderService {
 	List<PhysicalFolder> findAll();
 	List<PhysicalFolder> getCtTypeFolders(int contentTypeId);
 	PhysicalFolder save(PhysicalFolder physicalFolder);
+	PhysicalFolder getPF(int id);
 
 }

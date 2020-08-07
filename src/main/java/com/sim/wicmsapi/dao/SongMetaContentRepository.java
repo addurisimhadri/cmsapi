@@ -7,4 +7,6 @@ import com.sim.wicmsapi.entity.SongMeta;
 
 public interface SongMetaContentRepository extends JpaRepository<SongMeta, SongContentId> {
 	
+	SongMeta findBySmIdAndContentTypeId(int smId, int contentTypeId);
+	
 }

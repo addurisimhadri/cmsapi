@@ -18,4 +18,9 @@ public class SongMetaServiceImpl implements SongMetaService {
 		return songMetaContentRepository.save(songMeta);
 	}
 
+	@Override
+	public SongMeta findContentCT(int contId, int ctTypeId) {
+		return songMetaContentRepository.findBySmIdAndContentTypeId(contId, ctTypeId);
+	}
+
 }

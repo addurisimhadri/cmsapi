@@ -15,11 +15,13 @@ import com.sim.wicmsapi.entity.ContentProcessFTP;
 import com.sim.wicmsapi.entity.ContentProvider;
 import com.sim.wicmsapi.entity.ContentType;
 import com.sim.wicmsapi.entity.PhysicalFolder;
+import com.sim.wicmsapi.service.ContentDeviceService;
 import com.sim.wicmsapi.service.ContentProviderService;
 import com.sim.wicmsapi.service.ContentService;
 import com.sim.wicmsapi.service.ContentTypeService;
 import com.sim.wicmsapi.service.PhysicalFolderService;
 import com.sim.wicmsapi.utility.ZipUtility;
+import com.sim.wicmsapi.vo.FTPProcessContentObject;
 
 @Component
 public class ContentProcessFTPProcessor implements ItemProcessor<ContentProcessFTP, ContentProcessFTP> {
@@ -41,34 +43,33 @@ public class ContentProcessFTPProcessor implements ItemProcessor<ContentProcessF
 	@Autowired
 	PhysicalFolderService physicalFolderService;
 	
+	@Autowired
+	ContentDeviceService contentDeviceService;
+	
 	@Override
-	public ContentProcessFTP process(ContentProcessFTP item) throws Exception {
-		
-		
-		ContentType contentType=contentTypeService.getContentType(item.getContentTypeId()).get();
-		ContentProvider contentProvider=contentProviderService.getContentProvider(item.getCpId());
-		PhysicalFolder physicalFolder=  physicalFolderService.findById(item.getPfId()).get();
-		
+	public ContentProcessFTP process(ContentProcessFTP item) throws Exception {		
+		ContentType contentType=contentTypeService.getCType(item.getContentTypeId());
+		ContentProvider contentProvider=contentProviderService.getContentProvider(item.getCpId());				
 		String cpPath = contentProvider.getServerFtpHome()+File.separator+contentType.getContentName().toUpperCase()+File.separator;
-		if(new File(cpPath+item.getProcessZipfile()).exists()) {
-			
-			
-			
+		if(new File(cpPath+item.getProcessZipfile()).exists()) {			
+			checkUploadExtractLoc(item, cpPath, contentType, contentProvider);			
 		}else {
 			item.setProcessStatus("Failed ("+item.getProcessZipfile()+" is not found)");
 			logger.info(myMarker, " ContentProcessFTP  {} ",item);
-		}
-		
+		}		
 		
 		logger.info(myMarker, " ContentProcessFTP  {} ",item);
 		
 		return item;
 	}
 	
-	public void checkUploadExtractLoc(String zipFileName,String cpPath, ContentType contentType,ContentProvider contentProvider,PhysicalFolder physicalFolder) {
+	public void checkUploadExtractLoc(ContentProcessFTP item,String cpPath, ContentType contentType,ContentProvider contentProvider ) {
 		
+		String zipFileName=item.getProcessZipfile();
+		PhysicalFolder physicalFolder=  physicalFolderService.getPF(item.getPfId());
 		String zipFileName1  = zipFileName;
 		boolean isZipFile = false;
+		boolean status=false;
 		if( zipFileName.endsWith(".zip") ) {
 			zipFileName1 = zipFileName.substring(0,zipFileName.indexOf("zip")-1);
 			isZipFile = true;
@@ -83,10 +84,23 @@ public class ContentProcessFTPProcessor implements ItemProcessor<ContentProcessF
 				uploadExtractFile.mkdirs();
 		}
 		logger.info(myMarker, "zipFilePath: {} uploadExtractLoc {}{} ",cpPath,uploadExtractLoc,zipFileName);
-		
-		boolean status = ZipUtility.extractZipContentWithZip64File(cpPath+zipFileName, uploadExtractLoc,zipFileName1);
+		if(isZipFile)
+			status = ZipUtility.extractZipContentWithZip64File(zipFilePath, uploadExtractLoc,zipFileName1);
 		String startextra=zipFileName+" on "+new java.util.Date();
 		logger.info(myMarker," Upzipping Ended of {} {} ", startextra,status);
+		FTPProcessContentObject ftpObject = new FTPProcessContentObject();
+		
+		ftpObject.setContentId(item.getCpfContId());
+		ftpObject.setContentTypeId(item.getContentTypeId());
+		ftpObject.setPhysicalLocation(physicalFolder.getLocation()+item.getLocation());
+		ftpObject.setTitle(item.getTitle());
+		ftpObject.setContentURL(uploadExtractLoc+zipFileName1+"/"+item.getCpContentName());
+		ftpObject.setPreviewURL(uploadExtractLoc+zipFileName1+"/"+item.getCpContentName()+"/Preview/");
+		ftpObject.setThumbnail1URL(uploadExtractLoc+zipFileName1+"/"+item.getCpContentName()+"/Thumbnails/");
+		ftpObject.setThumbnail2URL(uploadExtractLoc+zipFileName1+"/"+item.getCpContentName()+"/Thumbnails/");
+		ftpObject.setThumbnail3URL(uploadExtractLoc+zipFileName1+"/"+item.getCpContentName()+"/Thumbnails/");
+		ftpObject.setProcessId(item.getProcessId()+"");
+		ftpObject.setUploadType(item.getUploadType());
 		
 	}
 

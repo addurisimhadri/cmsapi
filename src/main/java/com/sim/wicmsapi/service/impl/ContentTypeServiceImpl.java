@@ -35,4 +35,9 @@ public class ContentTypeServiceImpl implements ContentTypeService {
 		return contentTypeRepository.findByContentIdGreaterThanQuery(ctTypeId,active) ;
 	}
 
+	@Override
+	public ContentType getCType(int contentId) {
+		return contentTypeRepository.getOne(contentId);
+	}
+
 }

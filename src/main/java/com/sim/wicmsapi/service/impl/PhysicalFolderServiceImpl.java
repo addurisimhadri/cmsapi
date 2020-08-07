@@ -40,4 +40,9 @@ public class PhysicalFolderServiceImpl implements PhysicalFolderService {
 		return physicalFolderRepository.findByContentTypeId(contentTypeId);
 	}
 
+	@Override
+	public PhysicalFolder getPF(int id) {
+		return physicalFolderRepository.getOne(id);
+	}
+
 }
