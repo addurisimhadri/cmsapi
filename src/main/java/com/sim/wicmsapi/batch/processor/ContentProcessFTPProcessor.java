@@ -20,6 +20,7 @@ import com.sim.wicmsapi.service.ContentProviderService;
 import com.sim.wicmsapi.service.ContentService;
 import com.sim.wicmsapi.service.ContentTypeService;
 import com.sim.wicmsapi.service.PhysicalFolderService;
+import com.sim.wicmsapi.service.SongMetaService;
 import com.sim.wicmsapi.utility.ZipUtility;
 import com.sim.wicmsapi.vo.FTPProcessContentObject;
 
@@ -45,6 +46,9 @@ public class ContentProcessFTPProcessor implements ItemProcessor<ContentProcessF
 	
 	@Autowired
 	ContentDeviceService contentDeviceService;
+	
+	@Autowired
+	SongMetaService songMetaService;
 	
 	@Override
 	public ContentProcessFTP process(ContentProcessFTP item) throws Exception {		
