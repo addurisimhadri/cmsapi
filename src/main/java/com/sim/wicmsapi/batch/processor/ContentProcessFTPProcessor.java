@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.sim.wicmsapi.batch.utility.ContentProcessFTPUtility;
 import com.sim.wicmsapi.entity.ContentProcessFTP;
 import com.sim.wicmsapi.entity.ContentProvider;
 import com.sim.wicmsapi.entity.ContentType;
@@ -30,7 +31,7 @@ public class ContentProcessFTPProcessor implements ItemProcessor<ContentProcessF
 	static Marker myMarker = MarkerFactory.getMarker("MYMARKER");	
 	
 	@Value("${upload.unziplocation}")
-	public  String UPLOADED_FOLDER;	
+	public  String unZipLocation;	
 	
 	@Autowired
 	ContentService contentService;
@@ -78,7 +79,7 @@ public class ContentProcessFTPProcessor implements ItemProcessor<ContentProcessF
 			zipFileName1 = zipFileName.substring(0,zipFileName.indexOf("zip")-1);
 			isZipFile = true;
 		}
-		String uploadExtractLoc = UPLOADED_FOLDER;
+		String uploadExtractLoc = unZipLocation;
 		if(!uploadExtractLoc.endsWith(File.separator)) uploadExtractLoc = uploadExtractLoc+File.separator;
 		uploadExtractLoc = uploadExtractLoc+"UnzipZipFileContent"+File.separator+contentProvider.getCpId()+File.separator+contentType.getContentId()+File.separator;
 		File uploadExtractFile = new File(uploadExtractLoc);
@@ -101,11 +102,11 @@ public class ContentProcessFTPProcessor implements ItemProcessor<ContentProcessF
 		ftpObject.setContentURL(uploadExtractLoc+zipFileName1+"/"+item.getCpContentName());
 		ftpObject.setPreviewURL(uploadExtractLoc+zipFileName1+"/"+item.getCpContentName()+"/Preview/");
 		ftpObject.setThumbnail1URL(uploadExtractLoc+zipFileName1+"/"+item.getCpContentName()+"/Thumbnails/");
-		ftpObject.setThumbnail2URL(uploadExtractLoc+zipFileName1+"/"+item.getCpContentName()+"/Thumbnails/");
-		ftpObject.setThumbnail3URL(uploadExtractLoc+zipFileName1+"/"+item.getCpContentName()+"/Thumbnails/");
 		ftpObject.setProcessId(item.getProcessId()+"");
 		ftpObject.setUploadType(item.getUploadType());
 		
+		status=ContentProcessFTPUtility.processContentDownload(ftpObject, contentDeviceService, contentService, item, songMetaService);
+		logger.info(myMarker," processContentDownload {} ",status);
 	}
 
 }

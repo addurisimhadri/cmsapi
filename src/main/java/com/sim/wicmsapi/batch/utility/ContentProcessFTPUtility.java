@@ -1,6 +1,8 @@
 package com.sim.wicmsapi.batch.utility;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 
 import org.slf4j.Logger;
@@ -25,15 +27,21 @@ public class ContentProcessFTPUtility {
 	private ContentProcessFTPUtility() {}
 		
 	public static boolean processContentDownload(FTPProcessContentObject ftpObject,ContentDeviceService contentDeviceService,ContentService contentService,ContentProcessFTP item,SongMetaService songMetaService)	{
-		boolean contentFlag=false,previewFlag=false,thumbnailFlag=false,banner1Flag=false,banner2Flag=false;
-		if(!ftpObject.getContentURL().equals(""))
-		{
+		boolean contentFlag=false;
+		boolean previewFlag=false;
+		boolean thumbnailFlag=false;
+		if(!ftpObject.getContentURL().equals("")) {
 			contentFlag = processContentURL(ftpObject,contentDeviceService,contentService);	
 			if(contentFlag) item.setProcessStatus("Success");
 		}
-		if(!ftpObject.getPreviewURL().equals(""))
-		{
-			previewFlag = processContentPreviewURL(ftpObject,songMetaService);
+		if(!ftpObject.getPreviewURL().equals("")) {
+			previewFlag=processContentPreviewURL(ftpObject,songMetaService);
+		}
+		if(!ftpObject.getThumbnail1URL().equals("")) {
+			thumbnailFlag=processContentThumbnailURL(ftpObject,ftpObject.getThumbnail1URL(),contentService);
+		}
+		if(!contentFlag || !previewFlag || !thumbnailFlag ){
+			logger.info(myMarker,"FTP Content Flag Failed cid {} ",ftpObject.getContentId()+" cttype = "+ftpObject.getContentTypeId());
 		}
 		return contentFlag;
 		
@@ -127,17 +135,112 @@ public class ContentProcessFTPUtility {
 
 	public static boolean processContentPreview(File previewFile, FTPProcessContentObject upcObject,
 			SongMetaService songMetaService) {
+		boolean processFlag=true;
 		File previewDir = new File(upcObject.getPhysicalLocation()+"/Preview/");
 		File[] previews = previewDir.listFiles();
-		if(previews.length > 0) {
-			int contId = upcObject.getContentId();
-			int ctTypeId = upcObject.getContentTypeId();
-			String previewName = previewFile.getName();
-			SongMeta songMeta=songMetaService.findContentCT(contId, ctTypeId);
-			songMeta.setAppPreview(previewName);
-			songMetaService.save(songMeta);
-			
+		try {
+			if(previews.length > 0) {
+				int contId = upcObject.getContentId();
+				int ctTypeId = upcObject.getContentTypeId();
+				String previewName = previewFile.getName();
+				SongMeta songMeta=songMetaService.findContentCT(contId, ctTypeId);
+				songMeta.setAppPreview(previewName);
+				songMetaService.save(songMeta);
+				
+			}
+		}catch (Exception e) {
+			processFlag=false;
+			logger.error(myMarker," processContentPreview Ex::  {} ",e.getMessage());
 		}
-		return false;
+		return processFlag;
 	}
+	public static boolean processContentThumbnailURL(FTPProcessContentObject upcObject,String thumbnailURL, ContentService contentService)
+	{
+		boolean status = false;
+		String location = upcObject.getPhysicalLocation()+"/Thumbnails";		
+		File thumbnailFile = downloadImageFromZipFileLocation(thumbnailURL, location);
+		if(thumbnailFile != null) {
+			status = processContentThumbnail(thumbnailFile,upcObject,contentService);
+		}
+		return status;
+	}
+	private static boolean processContentThumbnail(File thumbnailFile, FTPProcessContentObject upcObject, ContentService contentService) {
+		boolean processFlag = true;
+		try {
+			ImageResize imageresize=new ImageResize();
+			String thumbnailName = thumbnailFile.getName();
+			long width = Utility.getWidth(thumbnailFile);
+			long height = Utility.getHeight(thumbnailFile); 
+			String thumbnailLocation = upcObject.getPhysicalLocation()+"/Thumbnails/";
+			Map<String,String> baseFiles = new HashMap<>();
+			baseFiles.put(width+"-"+height,thumbnailLocation+thumbnailName);
+			imageresize.myMusicProcessImageResizes(thumbnailLocation,thumbnailLocation,1,baseFiles);
+			insertThumbnailsToDB(thumbnailLocation, upcObject.getContentId(), upcObject.getContentTypeId(), contentService);
+		}
+		catch (Exception e) {
+			processFlag=false;
+		}
+		return processFlag;
+	}
+
+	public static File downloadImageFromZipFileLocation(String sourceLocation, String destinationLocation)
+	{
+		File requiredFile = null;
+		try
+		{
+			logger.info(myMarker,"destinationLocation {} ",destinationLocation);
+			File fs = new File(sourceLocation);
+			File[] listFiles = fs.listFiles();
+			if(listFiles!=null && listFiles.length >=1){
+				for(File destfile : listFiles) {
+					if( !destfile.isDirectory() ) {	
+						requiredFile = destfile;					
+						org.apache.commons.io.FileUtils.copyFileToDirectory(requiredFile,new File(destinationLocation),true);						
+					}
+				}
+			}
+		}
+		catch (Exception e) {
+			logger.info(myMarker,"downloadImageFromZipFileLocation Ex: {} ",e.getMessage());
+		}
+		return requiredFile;
+	}
+	public static void insertThumbnailsToDB(String thumbnailLocation,int cid,int contentTypeId,ContentService contentService){	
+		try {	
+			String[] widthxheight = null;
+			File thumbnailDir = new File(thumbnailLocation);		
+			File[] thumbnailDirList = thumbnailDir.listFiles();			
+			String image25x25 = "";
+			String image50x50 = "";
+			String image100x100 = "";
+			for(int k1 = 0 ; k1 < thumbnailDirList.length ; k1++) {
+				File fileName = thumbnailDirList[k1];
+				String imageName = fileName.getName();
+				if(!imageName.equalsIgnoreCase("Thumbs.db")){					
+					widthxheight = Utility.getWidthHeightbasedonFileName(imageName.substring(imageName.lastIndexOf('\\')+1),fileName.getAbsolutePath());
+					long width1=0;
+					long height1=0;
+					if(widthxheight!=null){
+						width1  = Long.parseLong(widthxheight[0]);
+						height1 = Long.parseLong(widthxheight[1]);				
+						if( width1 == 25 && height1 == 25 ) image25x25 = imageName;
+						if( width1 == 50 && height1 == 50 ) image50x50 = imageName;
+						if( width1 == 100 && height1 == 100 ) image100x100 = imageName;
+	
+					}
+				}
+			}
+			if( contentTypeId == 6 ) {
+				Content content=contentService.findContentCT(cid, contentTypeId);
+				content.setXhtmlSample(image50x50);
+				content.setSampleName(image100x100);
+				content.setWmlSample(image25x25);
+				contentService.save(content);							
+			}
+		}
+		catch (Exception e) {
+			logger.error(myMarker,"getWidth Ex: {} ",e.getMessage());
+		}	
+	}
+	
 }
