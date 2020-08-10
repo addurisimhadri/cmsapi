@@ -11,13 +11,16 @@ import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
 
 import com.sim.wicmsapi.entity.Content;
+import com.sim.wicmsapi.entity.ContentProcessFTP;
 import com.sim.wicmsapi.entity.ContentType;
+import com.sim.wicmsapi.service.ContentProcessFTPService;
 import com.sim.wicmsapi.service.ContentService;
 import com.sim.wicmsapi.service.ContentTypeService;
 import com.sim.wicmsapi.service.GameMetaService;
 import com.sim.wicmsapi.utility.ContentUtility;
 import com.sim.wicmsapi.utility.ExcelUtility;
 import com.sim.wicmsapi.utility.FolderUtility;
+import com.sim.wicmsapi.utility.SongContentUtility;
 import com.sim.wicmsapi.vo.ContentObject;
 import com.sim.wicmsapi.vo.UploadObject;
 
@@ -28,7 +31,7 @@ public class ContentProcess {
 		
 	}
 	
-	public static void contentProcess(UploadObject uploadObject,ContentService contentService, ContentTypeService contentTypeService, GameMetaService gameMetaService) {
+	public static void contentProcess(UploadObject uploadObject,ContentService contentService, ContentTypeService contentTypeService, GameMetaService gameMetaService, ContentProcessFTPService contentProcessFTPService) {
 		Map<String , ContentObject> ht = null;
 		String uploadExtractLoc = uploadObject.getSrcDir();
 		ContentType contentType=uploadObject.getContentType();
@@ -77,7 +80,11 @@ public class ContentProcess {
 						ContentUtility.copyContentZipToDest(uploadObject,contentexist,contentObject,folderMap, contentName);
 						
 						content= ContentUtility.storeContent(contentObject, contentType,contentexist,gameMetaService);
-						content=contentService.save(content);							
+						content=contentService.save(content);
+						
+						ContentProcessFTP contentProcessFTP=SongContentUtility.storeFTPContent(uploadObject, content);
+						contentProcessFTPService.save(contentProcessFTP);
+						
 						if(contentexist==null)
 							contentType.setMaxId(content.getContId());
 					}		

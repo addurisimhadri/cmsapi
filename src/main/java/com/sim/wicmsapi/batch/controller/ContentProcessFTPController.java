@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class ContentProcessFTPController {
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
-	
 	@Autowired
 	private JobLauncher jobLauncher;
 

@@ -58,15 +58,14 @@ public class ImageResize{
 		List<String> list = null ;
 		File fileImage = null;
 		File currentfile1 = null ;
-		File currentfile = null;
 		String srcDirectory=null;
 		String  desDirectory=null;
 		try { 
 			PropertiesBean propertiesBean = BeanUtil.getBean(PropertiesBean.class);
 			execPath=propertiesBean.getExPath();
 			strScrnResWEQH=propertiesBean.getWeh().split(",");
-			strScrnResWGTRH=propertiesBean.getWgh().split(",");
-			strScrnResWLESR=propertiesBean.getWlh().split(","); 
+			strScrnResWGTRH=new String[0];
+			strScrnResWLESR=new String[0]; 
 			reSizes960x760=propertiesBean.getW7h().split(",");
 			reSizes960x570=propertiesBean.getW5h().split(",");
 		
@@ -86,27 +85,20 @@ public class ImageResize{
 				destinationDir.mkdir();	
 			}
 			list =new  ArrayList<>(baseFiles.values());
-			logger.info(myMarker, "baseFiles {} ",baseFiles.values());	
-			File[] children = sourceDir.listFiles();			 
-			for (int iGetLength=0; iGetLength<children.length; iGetLength++) {					
-				currentfile = children[iGetLength];
-				if(currentfile.getName().endsWith(".db")) continue;
-				Iterator<String> it=list.iterator();
-				while(it.hasNext()) {
-					String strElement =it.next();
-					fileImage = new File(strElement);
-					currentfile1 =fileImage;
-					long width = Utility.getWidth(fileImage);
-					long height = Utility.getHeight(fileImage);
-					logger.info(myMarker, "sourceDir {} == {} == {} ", currentfile1,width,height);	
+			logger.info(myMarker, "baseFiles {} ",baseFiles.values());			 
+			Iterator<String> it=list.iterator();
+			while(it.hasNext()) {
+				String strElement =it.next();
+				fileImage = new File(strElement);
+				currentfile1 =fileImage;
+				long width = Utility.getWidth(fileImage);
+				long height = Utility.getHeight(fileImage);
+				logger.info(myMarker, "sourceDir {} == {} == {} ", currentfile1,width,height);
+				if(width>100)
 					resizeImage(currentfile1, width, height,contentType);
-					fileImage = null ;
-					currentfile1 = null;
-				}					
-				currentfile = null;
-			} /* End of  for  Loop */
-			sourceDir = null;
-			children = null;		
+				fileImage = null ;
+				currentfile1 = null;
+			}	
 		} 	               
 		catch(Exception e) {
 			e.printStackTrace();
@@ -120,32 +112,64 @@ public class ImageResize{
 		return result;		
 	}	
 
-	public Map<String, String> getBaseFiles(String sourcefilePath) {
-		File sourceFile = new File(sourcefilePath);
-		Map<String, String> ht = new HashMap<>();
-		if(sourceFile.isDirectory()) {
-			File[] sourceFiles = sourceFile.listFiles();
-			for(int i=0 ; i<sourceFiles.length ; i++) {  
-				File reqFile = sourceFiles[i]; 
-				if(!reqFile.getName().endsWith(".db")) {	
-					long width = Utility.getWidth(reqFile);
-					long height = Utility.getHeight(reqFile);
-					if(width == height && width==500 && height==500 ) {
-						ht.put("WIDTH=HEIGHT",reqFile.getAbsolutePath());
-					}
-					else 
-						if(width > height && width==640 && height==480) {
-							ht.put("WIDTH>HEIGHT", reqFile.getAbsolutePath());
-						}
-						else if(width < height && width==480 && height==640) {
-							ht.put("WIDTH<HEIGHT", reqFile.getAbsolutePath());
-						}
-				}
-			}
+	public String processImageResizes(String sourcefilePath,String destinationfilePath,int contentType,Map<String, String> baseFiles)  {		
+		List<String> list = null ;
+		File fileImage = null;
+		File currentfile1 = null ;
+		String srcDirectory=null;
+		String  desDirectory=null;
+		try { 
+			PropertiesBean propertiesBean = BeanUtil.getBean(PropertiesBean.class);
+			execPath=propertiesBean.getExPath();
+			strScrnResWEQH=propertiesBean.getWeh().split(",");
+			strScrnResWGTRH=propertiesBean.getWeh().split(",");
+			strScrnResWLESR=propertiesBean.getWlh().split(",");
+			reSizes960x760=new String[0];
+			reSizes960x570=new String[0];
+		
+			logger.info(myMarker, "propertiesBean {} ",propertiesBean);	
+			srcDirectory=sourcefilePath;
+			desDirectory=destinationfilePath;
+		} 
+ 		catch(Exception e) {
+ 			e.printStackTrace();
+ 			logger.error(myMarker, "Ex {} ", e.toString());		
 		}
-		return ht;
-	} 	
-
+		try	{
+			logger.info(myMarker, "sourceDir {} == {} ", sourceDir,desDirectory);	
+			sourceDir = new File(srcDirectory);
+			destinationDir = new File(desDirectory);			
+			if(!destinationDir.exists()) {
+				destinationDir.mkdir();	
+			}
+			list =new  ArrayList<>(baseFiles.values());
+			logger.info(myMarker, "baseFiles {} ",baseFiles.values());			 
+			Iterator<String> it=list.iterator();
+			while(it.hasNext()) {
+				String strElement =it.next();
+				fileImage = new File(strElement);
+				currentfile1 =fileImage;
+				long width = Utility.getWidth(fileImage);
+				long height = Utility.getHeight(fileImage);
+				logger.info(myMarker, "sourceDir {} == {} == {} ", currentfile1,width,height);
+				if(width>100)
+					resizeImage(currentfile1, width, height,contentType);
+				fileImage = null ;
+				currentfile1 = null;
+			}	
+		} 	               
+		catch(Exception e) {
+			e.printStackTrace();
+			result="NOK";
+			logger.error(myMarker,"Error Message  {} ", e.getMessage());
+		} 
+		finally {
+			if(baseFiles != null)
+				baseFiles = null;
+        }
+		return result;		
+	}	
+	
 
 	public void resizeImage(File currentfile1,long width, long height, int contentType) {
 		try {
@@ -209,9 +233,9 @@ public class ImageResize{
 				int index2=currentfile1.getName().lastIndexOf('_');
 				String fname2=currentfile1.getName().substring(0,index2+1);
 				String fileExten=currentfile1.getName().substring(currentfile1.getName().indexOf('.'));
-				String strWLH=execPath+" "+sourceDir.getAbsolutePath()+File.separator+currentfile1.getName()+" -resize "+sizeHW+"! "+destinationDir.getAbsolutePath()+File.separator+fname2+sizeHW+fileExten;
-				logger.info(myMarker,"strWLH:: {} ",strWLH);
-				p = Runtime.getRuntime().exec(strWLH);	
+				String execmd=execPath+" "+sourceDir.getAbsolutePath()+File.separator+currentfile1.getName()+" -resize "+sizeHW+"! "+destinationDir.getAbsolutePath()+File.separator+fname2+sizeHW+fileExten;
+				logger.info(myMarker,"execmd:: {} ",execmd);
+				p = Runtime.getRuntime().exec(execmd);	
 				p.waitFor();
 				p.destroy();
 				p = null;
@@ -228,6 +252,32 @@ public class ImageResize{
 			logger.error(myMarker,"Ex:: {} ",e.getMessage());
 		}			
 	}
+
+	public Map<String, String> getBaseFiles(String sourcefilePath) {
+		File sourceFile = new File(sourcefilePath);
+		Map<String, String> ht = new HashMap<>();
+		if(sourceFile.isDirectory()) {
+			File[] sourceFiles = sourceFile.listFiles();
+			for(int i=0 ; i<sourceFiles.length ; i++) {  
+				File reqFile = sourceFiles[i]; 
+				if(!reqFile.getName().endsWith(".db")) {	
+					long width = Utility.getWidth(reqFile);
+					long height = Utility.getHeight(reqFile);
+					if(width == height && width==500 && height==500 ) {
+						ht.put("WIDTH=HEIGHT",reqFile.getAbsolutePath());
+					}
+					else 
+						if(width > height && width==640 && height==480) {
+							ht.put("WIDTH>HEIGHT", reqFile.getAbsolutePath());
+						}
+						else if(width < height && width==480 && height==640) {
+							ht.put("WIDTH<HEIGHT", reqFile.getAbsolutePath());
+						}
+				}
+			}
+		}
+		return ht;
+	} 	
 
 
 }

@@ -70,43 +70,71 @@ public class ContentProcessFTPProcessor implements ItemProcessor<ContentProcessF
 	
 	public void checkUploadExtractLoc(ContentProcessFTP item,String cpPath, ContentType contentType,ContentProvider contentProvider ) {
 		
-		String zipFileName=item.getProcessZipfile();
-		PhysicalFolder physicalFolder=  physicalFolderService.getPF(item.getPfId());
-		String zipFileName1  = zipFileName;
-		boolean isZipFile = false;
-		boolean status=false;
-		if( zipFileName.endsWith(".zip") ) {
-			zipFileName1 = zipFileName.substring(0,zipFileName.indexOf("zip")-1);
-			isZipFile = true;
+		try {
+			switch (contentType.getContentId()) {
+			case 6:
+				songsUploadExtraLoc(item, cpPath, contentType, contentProvider);
+				break;
+			case 31:
+				break;
+			case 11:
+				break;
+			default:
+				break;
+			}
+		} catch (Exception e) {
+			logger.info(myMarker," Ex::  {} ",e);
 		}
-		String uploadExtractLoc = unZipLocation;
-		if(!uploadExtractLoc.endsWith(File.separator)) uploadExtractLoc = uploadExtractLoc+File.separator;
-		uploadExtractLoc = uploadExtractLoc+"UnzipZipFileContent"+File.separator+contentProvider.getCpId()+File.separator+contentType.getContentId()+File.separator;
-		File uploadExtractFile = new File(uploadExtractLoc);
-		String zipFilePath ="";
-		zipFilePath=cpPath+zipFileName;
-		if(!uploadExtractFile.exists()) {
-				uploadExtractFile.mkdirs();
-		}
-		logger.info(myMarker, "zipFilePath: {} uploadExtractLoc {}{} ",cpPath,uploadExtractLoc,zipFileName);
-		if(isZipFile)
-			status = ZipUtility.extractZipContentWithZip64File(zipFilePath, uploadExtractLoc,zipFileName1);
-		String startextra=zipFileName+" on "+new java.util.Date();
-		logger.info(myMarker," Upzipping Ended of {} {} ", startextra,status);
-		FTPProcessContentObject ftpObject = new FTPProcessContentObject();
+	}
+	
+	public void songsUploadExtraLoc(ContentProcessFTP item,String cpPath, ContentType contentType,ContentProvider contentProvider) {
 		
-		ftpObject.setContentId(item.getCpfContId());
-		ftpObject.setContentTypeId(item.getContentTypeId());
-		ftpObject.setPhysicalLocation(physicalFolder.getLocation()+File.separator+item.getLocation());
-		ftpObject.setTitle(item.getTitle());
-		ftpObject.setContentURL(uploadExtractLoc+zipFileName1+File.separator+item.getCpContentName());
-		ftpObject.setPreviewURL(uploadExtractLoc+zipFileName1+File.separator+item.getCpContentName()+File.separator+"Preview"+File.separator);
-		ftpObject.setThumbnail1URL(uploadExtractLoc+zipFileName1+File.separator+item.getCpContentName()+File.separator+"Thumbnails"+File.separator);
-		ftpObject.setProcessId(item.getProcessId()+"");
-		ftpObject.setUploadType(item.getUploadType());
+		try {
+			String zipFileName=item.getProcessZipfile();
+			PhysicalFolder physicalFolder=  physicalFolderService.getPF(item.getPfId());
+			String zipFileName1  = zipFileName;
+			boolean isZipFile = false;
+			boolean status=false;
+			if( zipFileName.endsWith(".zip") ) {
+				zipFileName1 = zipFileName.substring(0,zipFileName.indexOf("zip")-1);
+				isZipFile = true;
+			}
+			String uploadExtractLoc = unZipLocation;
+			if(!uploadExtractLoc.endsWith(File.separator)) uploadExtractLoc = uploadExtractLoc+File.separator;
+			uploadExtractLoc = uploadExtractLoc+"UnzipZipFileContent"+File.separator+contentProvider.getCpId()+File.separator+contentType.getContentId()+File.separator;
+			File uploadExtractFile = new File(uploadExtractLoc);
+			String zipFilePath ="";
+			zipFilePath=cpPath+zipFileName;
+			if(!uploadExtractFile.exists()) {
+					uploadExtractFile.mkdirs();
+			}
+			logger.info(myMarker, "zipFilePath: {} uploadExtractLoc {}{} ",cpPath,uploadExtractLoc,zipFileName);
+			if(isZipFile)
+				status = ZipUtility.extractZipContentWithZip64File(zipFilePath, uploadExtractLoc,zipFileName1);
+			String startextra=zipFileName+" on "+new java.util.Date();
+			logger.info(myMarker," Upzipping Ended of {} {} ", startextra,status);
+			FTPProcessContentObject ftpObject = new FTPProcessContentObject();
+			
+			ftpObject.setContentId(item.getCpfContId());
+			ftpObject.setContentTypeId(item.getContentTypeId());
+			ftpObject.setPhysicalLocation(physicalFolder.getLocation()+File.separator+item.getLocation());
+			ftpObject.setTitle(item.getTitle());
+			ftpObject.setContentURL(uploadExtractLoc+zipFileName1+File.separator+item.getCpContentName());
+			ftpObject.setPreviewURL(uploadExtractLoc+zipFileName1+File.separator+item.getCpContentName()+File.separator+"Preview"+File.separator);
+			ftpObject.setThumbnail1URL(uploadExtractLoc+zipFileName1+File.separator+item.getCpContentName()+File.separator+"Thumbnails"+File.separator);
+			ftpObject.setProcessId(item.getProcessId()+"");
+			ftpObject.setUploadType(item.getUploadType());
+			
+			status=ContentProcessFTPUtility.processContentDownload(ftpObject, contentDeviceService, contentService, item, songMetaService);
+			logger.info(myMarker," processContentDownload {} ",status);
+		} catch (Exception e) {
+			logger.info(myMarker," Ex::  {} ",e);
+		}	
+	}
+	
+	public void imageTypeResize() {
 		
-		status=ContentProcessFTPUtility.processContentDownload(ftpObject, contentDeviceService, contentService, item, songMetaService);
-		logger.info(myMarker," processContentDownload {} ",status);
+		
 	}
 
 }

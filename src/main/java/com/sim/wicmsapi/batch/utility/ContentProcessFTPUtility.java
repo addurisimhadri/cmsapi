@@ -57,6 +57,7 @@ public class ContentProcessFTPUtility {
 		java.sql.Timestamp updateTimeStamp = new java.sql.Timestamp(new java.util.Date().getTime());
 		ftpObject.setUpdateTimeStamp(updateTimeStamp);
 		File contentFile = downloadFileFromZipFileLocation(contentURL, location);
+		logger.info(myMarker," Processing the contentFile :{} ",contentFile);
 		if(contentFile != null)	{
 			logger.info(myMarker," Processing the contentFile :{} ",contentFile.getName());
 			status = processContent(contentFile,ftpObject,contentDeviceService,contentService);
@@ -95,6 +96,7 @@ public class ContentProcessFTPUtility {
 			contentDeviceService.deleteContentDevice(contId, ctTypeId);
 			
 			String fileName = file.getName();
+			logger.info(myMarker," processContent : ---- {}",fileName  );
 			String fileFormat = fileName.substring(fileName.lastIndexOf('.')+1);
 			long size = file.length();
 			long rand=ThreadLocalRandom.current().nextLong( 910000000001L, 910999999999L);
@@ -129,6 +131,7 @@ public class ContentProcessFTPUtility {
 		String previewURL = upcObject.getPreviewURL();
 		String location = upcObject.getPhysicalLocation()+File.separator+"Preview";
 		File previewFile = downloadFileFromZipFileLocation(previewURL, location);
+		logger.info(myMarker, "processContentPreviewURL------------ {} ",previewFile);
 		if(previewFile != null)	{
 			status = processContentPreview(previewFile,upcObject,songMetaService);
 		}
@@ -141,6 +144,7 @@ public class ContentProcessFTPUtility {
 		File previewDir = new File(upcObject.getPhysicalLocation()+File.separator+"Preview"+File.separator);
 		File[] previews = previewDir.listFiles();
 		try {
+			logger.info(myMarker, "processContentPreview------------ {} ",previewFile);
 			if(previews.length > 0) {
 				int contId = upcObject.getContentId();
 				int ctTypeId = upcObject.getContentTypeId();
@@ -160,9 +164,10 @@ public class ContentProcessFTPUtility {
 	{
 		boolean status = false;
 		String location = upcObject.getPhysicalLocation()+File.separator+"Thumbnails";		
-		List<File> thumbnailFile = downloadImageFromZipFileLocation(thumbnailURL, location);
-		if(thumbnailFile != null) {
-			status = processContentThumbnail(thumbnailFile,upcObject,contentService);
+		List<File> thumbnailFiles = downloadImageFromZipFileLocation(thumbnailURL, location);
+		logger.info(myMarker, "processContentThumbnailURL------------ {} ",thumbnailFiles);
+		if(!thumbnailFiles.isEmpty()) {
+			status = processContentThumbnail(thumbnailFiles,upcObject,contentService);
 		}
 		return status;
 	}
@@ -179,7 +184,8 @@ public class ContentProcessFTPUtility {
 				long width = Utility.getWidth(thumbnailFile);
 				long height = Utility.getHeight(thumbnailFile);								
 				baseFiles.put(width+"-"+height,thumbnailLocation+thumbnailName);
-			}		
+			}
+			logger.info(myMarker, "processContentThumbnail------------ {} ============{} ",thumbnailFiles,baseFiles);
 			imageresize.myMusicProcessImageResizes(thumbnailLocation,thumbnailLocation,1,baseFiles);
 			insertThumbnailsToDB(thumbnailLocation, upcObject.getContentId(), upcObject.getContentTypeId(), contentService);
 		}
@@ -240,11 +246,10 @@ public class ContentProcessFTPUtility {
 				} 
 			}
 			if( contentTypeId == 6 ) {
-				Content content=contentService.findContentCT(cid, contentTypeId);
-				
-				content.setXhtmlSample(image50x50);
-				content.setSampleName(image100x100);
-				content.setWmlSample(image25x25);
+				Content content=contentService.findContentCT(cid, contentTypeId);				
+				content.setXhtmlSample(File.separator+"Thumbnails"+File.separator+image50x50);
+				content.setSampleName(File.separator+"Thumbnails"+File.separator+image100x100);
+				content.setWmlSample(File.separator+"Thumbnails"+File.separator+image25x25);
 				contentService.save(content);							
 			}
 		}

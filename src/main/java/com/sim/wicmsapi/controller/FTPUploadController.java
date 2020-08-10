@@ -7,6 +7,8 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.Marker;
+import org.slf4j.MarkerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.ComponentScan;
@@ -43,6 +45,7 @@ import com.sim.wicmsapi.vo.UploadObject;
 @ComponentScan(basePackages="com.sim.upload")
 public class FTPUploadController {
 	private static final Logger logger = LoggerFactory.getLogger(FTPUploadController.class);
+	static Marker myMarker = MarkerFactory.getMarker("MYMARKER");
 	@Value("${upload.unziplocation}")
 	public  String UPLOADED_FOLDER;	
 	
@@ -80,6 +83,7 @@ public class FTPUploadController {
 		ContentProvider contentProvider=contentProviderService.getContentProvider(cpId);
 		ContentType contentType=contentTypeService.getContentType(contentId).get();		
 		File file = new File(contentProvider.getServerFtpHome()+File.separator+contentType.getContentName().toUpperCase());
+		logger.info(myMarker, "file {}  | file is exists : {} ",file.getAbsolutePath(),file.exists());
 		return FTPUploadUtility.getZipFileNames(file);
 	}
 	@PostMapping(value = "/upload")
@@ -120,7 +124,7 @@ public class FTPUploadController {
 					/*
 					 * Content Processing
 					 */
-					ContentProcess.contentProcess(uploadObject,contentService, contentTypeService,gameMetaService);
+					ContentProcess.contentProcess(uploadObject,contentService, contentTypeService,gameMetaService, contentProcessFTPService);
 					File zipfile=new File(uploadObject.getZipFilePath());
 					if(zipfile.exists()) {
 						logger.info(zipfile.getName()+" Zip file Deleted");

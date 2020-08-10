@@ -24,6 +24,7 @@ import com.sim.wicmsapi.entity.PhysicalFolder;
 import com.sim.wicmsapi.process.ContentProcess;
 import com.sim.wicmsapi.process.ZipFileProcess;
 import com.sim.wicmsapi.service.ContentLangService;
+import com.sim.wicmsapi.service.ContentProcessFTPService;
 import com.sim.wicmsapi.service.ContentProviderService;
 import com.sim.wicmsapi.service.ContentService;
 import com.sim.wicmsapi.service.ContentTypeService;
@@ -67,6 +68,10 @@ public class WebUploadController {
 	@Autowired
 	PhysicalFolderService physicalFolderService;
 	
+	@Autowired
+	ContentProcessFTPService contentProcessFTPService;
+	
+	
 	@PostMapping(value = "/upload")
 	public ApiResponse<Void> uploadSingleFile(@RequestParam("contentId") Integer contentId,@RequestParam("cpId") Integer cpId,@RequestParam("pfId") Integer pfId,@RequestParam("zipFile") MultipartFile file) {
 		String status="";
@@ -100,7 +105,7 @@ public class WebUploadController {
 						/*
 						 * Content Processing
 						 */
-						ContentProcess.contentProcess(uploadObject,contentService, contentTypeService,gameMetaService);
+						ContentProcess.contentProcess(uploadObject,contentService, contentTypeService,gameMetaService, contentProcessFTPService);
 						
 						/*
 						 * ZipFile Name delete from unZiplocation
