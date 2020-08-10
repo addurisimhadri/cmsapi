@@ -3,11 +3,12 @@ package com.sim.wicmsapi.service.impl;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.sim.wicmsapi.dao.ContentDeviceRepository;
 import com.sim.wicmsapi.entity.ContentDevice;
 import com.sim.wicmsapi.service.ContentDeviceService;
-
+@Service
 public class ContentDeviceServiceImpl implements ContentDeviceService {
 
 	@Autowired

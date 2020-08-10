@@ -50,7 +50,7 @@ public class ContentProcessFTPProcessor implements ItemProcessor<ContentProcessF
 	
 	@Autowired
 	SongMetaService songMetaService;
-	
+	 
 	@Override
 	public ContentProcessFTP process(ContentProcessFTP item) throws Exception {		
 		ContentType contentType=contentTypeService.getCType(item.getContentTypeId());
@@ -62,7 +62,7 @@ public class ContentProcessFTPProcessor implements ItemProcessor<ContentProcessF
 			item.setProcessStatus("Failed ("+item.getProcessZipfile()+" is not found)");
 			logger.info(myMarker, " ContentProcessFTP  {} ",item);
 		}		
-		
+		 
 		logger.info(myMarker, " ContentProcessFTP  {} ",item);
 		
 		return item;
@@ -97,11 +97,11 @@ public class ContentProcessFTPProcessor implements ItemProcessor<ContentProcessF
 		
 		ftpObject.setContentId(item.getCpfContId());
 		ftpObject.setContentTypeId(item.getContentTypeId());
-		ftpObject.setPhysicalLocation(physicalFolder.getLocation()+item.getLocation());
+		ftpObject.setPhysicalLocation(physicalFolder.getLocation()+File.separator+item.getLocation());
 		ftpObject.setTitle(item.getTitle());
-		ftpObject.setContentURL(uploadExtractLoc+zipFileName1+"/"+item.getCpContentName());
-		ftpObject.setPreviewURL(uploadExtractLoc+zipFileName1+"/"+item.getCpContentName()+"/Preview/");
-		ftpObject.setThumbnail1URL(uploadExtractLoc+zipFileName1+"/"+item.getCpContentName()+"/Thumbnails/");
+		ftpObject.setContentURL(uploadExtractLoc+zipFileName1+File.separator+item.getCpContentName());
+		ftpObject.setPreviewURL(uploadExtractLoc+zipFileName1+File.separator+item.getCpContentName()+File.separator+"Preview"+File.separator);
+		ftpObject.setThumbnail1URL(uploadExtractLoc+zipFileName1+File.separator+item.getCpContentName()+File.separator+"Thumbnails"+File.separator);
 		ftpObject.setProcessId(item.getProcessId()+"");
 		ftpObject.setUploadType(item.getUploadType());
 		

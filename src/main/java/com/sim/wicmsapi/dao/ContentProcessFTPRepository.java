@@ -15,6 +15,6 @@ public interface ContentProcessFTPRepository extends JpaRepository<ContentProces
 	List<ContentProcessFTP> findByContentTypeId(int contentTypeId);
 	
 	@Query("select cpf  from ContentProcessFTP cpf where processStatus='In Queue' and submitStatus='Completed' order by lastUpdatedTimestamp" )
-	List<ContentProcessFTP> findData();
+	List<ContentProcessFTP> findData(); 
 
 }

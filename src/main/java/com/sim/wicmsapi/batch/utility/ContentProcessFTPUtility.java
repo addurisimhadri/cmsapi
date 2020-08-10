@@ -1,7 +1,10 @@
 package com.sim.wicmsapi.batch.utility;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -69,7 +72,8 @@ public class ContentProcessFTPUtility {
 			if(listFiles!=null && listFiles.length >=1) {
 				for(File destfile : listFiles) 	{
 					if( !destfile.isDirectory() ) {
-						requiredFile = destfile;						
+						requiredFile = destfile;
+						logger.info(myMarker," downloadFileFromZipFileLocation :{} ---- {}",requiredFile ,destinationLocation );
 						org.apache.commons.io.FileUtils.copyFileToDirectory(requiredFile,new File(destinationLocation),true);
 					}					
 				}
@@ -107,10 +111,8 @@ public class ContentProcessFTPUtility {
 			contentDevice.setContFileName(fileName);
 			contentDevice.setFileSize(size);
 			contentDevice.setFormats(fileFormat);
-			contentDevice.setRandomCode(randNum);
-			
-			contentDeviceService.save(contentDevice);
-			
+			contentDevice.setRandomCode(randNum);			
+			contentDeviceService.save(contentDevice);		
 			
 			Content content=contentService.findContentCT(contId, ctTypeId);
 			content.setStatus("1");
@@ -125,7 +127,7 @@ public class ContentProcessFTPUtility {
 	public static boolean processContentPreviewURL(FTPProcessContentObject upcObject, SongMetaService songMetaService) {
 		boolean status = false;
 		String previewURL = upcObject.getPreviewURL();
-		String location = upcObject.getPhysicalLocation()+"/Preview";
+		String location = upcObject.getPhysicalLocation()+File.separator+"Preview";
 		File previewFile = downloadFileFromZipFileLocation(previewURL, location);
 		if(previewFile != null)	{
 			status = processContentPreview(previewFile,upcObject,songMetaService);
@@ -136,7 +138,7 @@ public class ContentProcessFTPUtility {
 	public static boolean processContentPreview(File previewFile, FTPProcessContentObject upcObject,
 			SongMetaService songMetaService) {
 		boolean processFlag=true;
-		File previewDir = new File(upcObject.getPhysicalLocation()+"/Preview/");
+		File previewDir = new File(upcObject.getPhysicalLocation()+File.separator+"Preview"+File.separator);
 		File[] previews = previewDir.listFiles();
 		try {
 			if(previews.length > 0) {
@@ -157,23 +159,27 @@ public class ContentProcessFTPUtility {
 	public static boolean processContentThumbnailURL(FTPProcessContentObject upcObject,String thumbnailURL, ContentService contentService)
 	{
 		boolean status = false;
-		String location = upcObject.getPhysicalLocation()+"/Thumbnails";		
-		File thumbnailFile = downloadImageFromZipFileLocation(thumbnailURL, location);
+		String location = upcObject.getPhysicalLocation()+File.separator+"Thumbnails";		
+		List<File> thumbnailFile = downloadImageFromZipFileLocation(thumbnailURL, location);
 		if(thumbnailFile != null) {
 			status = processContentThumbnail(thumbnailFile,upcObject,contentService);
 		}
 		return status;
 	}
-	private static boolean processContentThumbnail(File thumbnailFile, FTPProcessContentObject upcObject, ContentService contentService) {
+	private static boolean processContentThumbnail(List<File> thumbnailFiles, FTPProcessContentObject upcObject, ContentService contentService) {
 		boolean processFlag = true;
 		try {
 			ImageResize imageresize=new ImageResize();
-			String thumbnailName = thumbnailFile.getName();
-			long width = Utility.getWidth(thumbnailFile);
-			long height = Utility.getHeight(thumbnailFile); 
-			String thumbnailLocation = upcObject.getPhysicalLocation()+"/Thumbnails/";
+			String thumbnailLocation = upcObject.getPhysicalLocation()+File.separator+"Thumbnails"+File.separator;
+			Iterator<File> it=thumbnailFiles.iterator();
 			Map<String,String> baseFiles = new HashMap<>();
-			baseFiles.put(width+"-"+height,thumbnailLocation+thumbnailName);
+			while (it.hasNext()) {
+				File thumbnailFile = (File) it.next();
+				String thumbnailName = thumbnailFile.getName();
+				long width = Utility.getWidth(thumbnailFile);
+				long height = Utility.getHeight(thumbnailFile);								
+				baseFiles.put(width+"-"+height,thumbnailLocation+thumbnailName);
+			}		
 			imageresize.myMusicProcessImageResizes(thumbnailLocation,thumbnailLocation,1,baseFiles);
 			insertThumbnailsToDB(thumbnailLocation, upcObject.getContentId(), upcObject.getContentTypeId(), contentService);
 		}
@@ -183,9 +189,10 @@ public class ContentProcessFTPUtility {
 		return processFlag;
 	}
 
-	public static File downloadImageFromZipFileLocation(String sourceLocation, String destinationLocation)
+	public static List<File> downloadImageFromZipFileLocation(String sourceLocation, String destinationLocation)
 	{
 		File requiredFile = null;
+		List<File> files=new ArrayList<File>();
 		try
 		{
 			logger.info(myMarker,"destinationLocation {} ",destinationLocation);
@@ -194,7 +201,9 @@ public class ContentProcessFTPUtility {
 			if(listFiles!=null && listFiles.length >=1){
 				for(File destfile : listFiles) {
 					if( !destfile.isDirectory() ) {	
-						requiredFile = destfile;					
+						requiredFile = destfile;
+						files.add(requiredFile);
+						logger.info(myMarker," downloadImageFromZipFileLocation :{} ---- {}",requiredFile ,destinationLocation );
 						org.apache.commons.io.FileUtils.copyFileToDirectory(requiredFile,new File(destinationLocation),true);						
 					}
 				}
@@ -203,7 +212,7 @@ public class ContentProcessFTPUtility {
 		catch (Exception e) {
 			logger.info(myMarker,"downloadImageFromZipFileLocation Ex: {} ",e.getMessage());
 		}
-		return requiredFile;
+		return files;
 	}
 	public static void insertThumbnailsToDB(String thumbnailLocation,int cid,int contentTypeId,ContentService contentService){	
 		try {	
@@ -228,10 +237,11 @@ public class ContentProcessFTPUtility {
 						if( width1 == 100 && height1 == 100 ) image100x100 = imageName;
 	
 					}
-				}
+				} 
 			}
 			if( contentTypeId == 6 ) {
 				Content content=contentService.findContentCT(cid, contentTypeId);
+				
 				content.setXhtmlSample(image50x50);
 				content.setSampleName(image100x100);
 				content.setWmlSample(image25x25);
@@ -242,5 +252,6 @@ public class ContentProcessFTPUtility {
 			logger.error(myMarker,"getWidth Ex: {} ",e.getMessage());
 		}	
 	}
+	//public static void
 	
 }

@@ -29,32 +29,28 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
+import com.sim.wicmsapi.batch.config.BeanUtil;
+import com.sim.wicmsapi.vo.PropertiesBean;
+
 @Component
-@PropertySource("classpath:/resizeimage.properties")
 public class ImageResize{
 	private static final Logger logger = LoggerFactory.getLogger(ImageResize.class);
 	static Marker myMarker = MarkerFactory.getMarker("MYMARKER");
 	
-	@Autowired
-	Environment environment;
+		
 	static String fileSeparator=File.separator;
 	
 	String[] strScrnResWEQH=null; 
 	String[] strScrnResWGTRH=null;  
 	String[] strScrnResWLESR=null; 
-	String[] reSizes960x760=null;
+	String[] reSizes960x760=null; 
 	String[] reSizes960x570=null;
-	
 	Process p = null;
 	String result="";
-	String execPath=""; 
-	String srcDirectory=null;
-	String  desDirectory=null;
+	String execPath; 
+	
 	File destinationDir = null;
 	File sourceDir=null;
 	 /* myMusicProcessImageResizes() Statrs */
@@ -63,38 +59,46 @@ public class ImageResize{
 		File fileImage = null;
 		File currentfile1 = null ;
 		File currentfile = null;
-		try {	
-			
-			execPath=environment.getProperty("IMAGEMAGIC_PATH");		
-			strScrnResWEQH=environment.getProperty("RES_WIDTH_EQUAL_TO_HEIGHT").split(",");
-			strScrnResWGTRH=environment.getProperty("RES_WIDTH_GREATERTHAN_HEIGHT").split(",");
-			strScrnResWLESR=environment.getProperty("RES_WIDTH_LESSTHAN_HEIGHT").split(","); 
-			reSizes960x760=environment.getProperty("reSizes960x760").split(",");//banner1
-			reSizes960x570=environment.getProperty("reSizes960x570").split(",");//banner2
+		String srcDirectory=null;
+		String  desDirectory=null;
+		try { 
+			PropertiesBean propertiesBean = BeanUtil.getBean(PropertiesBean.class);
+			execPath=propertiesBean.getExPath();
+			strScrnResWEQH=propertiesBean.getWeh().split(",");
+			strScrnResWGTRH=propertiesBean.getWgh().split(",");
+			strScrnResWLESR=propertiesBean.getWlh().split(","); 
+			reSizes960x760=propertiesBean.getW7h().split(",");
+			reSizes960x570=propertiesBean.getW5h().split(",");
+		
+			logger.info(myMarker, "propertiesBean {} ",propertiesBean);	
 			srcDirectory=sourcefilePath;
 			desDirectory=destinationfilePath;
 		} 
- 		catch(Exception ioe) {
- 			logger.error(myMarker, "Ex {} ", ioe.getMessage());		
+ 		catch(Exception e) {
+ 			e.printStackTrace();
+ 			logger.error(myMarker, "Ex {} ", e.toString());		
 		}
-		try	{	
+		try	{
+			logger.info(myMarker, "sourceDir {} == {} ", sourceDir,desDirectory);	
 			sourceDir = new File(srcDirectory);
 			destinationDir = new File(desDirectory);			
-			if(!destinationDir.exists()) { 
+			if(!destinationDir.exists()) {
 				destinationDir.mkdir();	
 			}
-			list =new  ArrayList<>(baseFiles.values());	
+			list =new  ArrayList<>(baseFiles.values());
+			logger.info(myMarker, "baseFiles {} ",baseFiles.values());	
 			File[] children = sourceDir.listFiles();			 
 			for (int iGetLength=0; iGetLength<children.length; iGetLength++) {					
 				currentfile = children[iGetLength];
 				if(currentfile.getName().endsWith(".db")) continue;
 				Iterator<String> it=list.iterator();
-				while(it.hasNext()) {    
+				while(it.hasNext()) {
 					String strElement =it.next();
 					fileImage = new File(strElement);
 					currentfile1 =fileImage;
 					long width = Utility.getWidth(fileImage);
 					long height = Utility.getHeight(fileImage);
+					logger.info(myMarker, "sourceDir {} == {} == {} ", currentfile1,width,height);	
 					resizeImage(currentfile1, width, height,contentType);
 					fileImage = null ;
 					currentfile1 = null;
@@ -105,6 +109,7 @@ public class ImageResize{
 			children = null;		
 		} 	               
 		catch(Exception e) {
+			e.printStackTrace();
 			result="NOK";
 			logger.error(myMarker,"Error Message  {} ", e.getMessage());
 		} 
@@ -200,11 +205,12 @@ public class ImageResize{
 	public  void resizeImageExecution(File currentfile1,String sizeHW) {
 		
 		try {
-			if(!sizeHW.equals("")) {
+			if(!sizeHW.equals("")) { 
 				int index2=currentfile1.getName().lastIndexOf('_');
 				String fname2=currentfile1.getName().substring(0,index2+1);
 				String fileExten=currentfile1.getName().substring(currentfile1.getName().indexOf('.'));
 				String strWLH=execPath+" "+sourceDir.getAbsolutePath()+File.separator+currentfile1.getName()+" -resize "+sizeHW+"! "+destinationDir.getAbsolutePath()+File.separator+fname2+sizeHW+fileExten;
+				logger.info(myMarker,"strWLH:: {} ",strWLH);
 				p = Runtime.getRuntime().exec(strWLH);	
 				p.waitFor();
 				p.destroy();
@@ -212,8 +218,7 @@ public class ImageResize{
 			}
 		} catch (Exception e) {
 			logger.error(myMarker,"Ex:: {} ",e.getMessage());
-		}
-		
+		}	
 	}
 	public static void main(String[] args) {	
 		 try {
