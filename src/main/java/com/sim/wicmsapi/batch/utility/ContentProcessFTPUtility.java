@@ -257,6 +257,28 @@ public class ContentProcessFTPUtility {
 			logger.error(myMarker,"getWidth Ex: {} ",e.getMessage());
 		}	
 	}
-	//public static void
+	public static List<File> getFilesFromImageLocation(String sourceLocation)
+	{
+		File requiredFile = null;
+		List<File> files=new ArrayList<File>();
+		try	{
+			logger.info(myMarker,"sourceLocation {} ",sourceLocation);
+			File fs = new File(sourceLocation);
+			File[] listFiles = fs.listFiles();
+			if(listFiles!=null && listFiles.length >=1){
+				for(File destfile : listFiles) {
+					if( !destfile.isDirectory() ) {	
+						requiredFile = destfile;
+						files.add(requiredFile);
+						logger.info(myMarker," getFilesFromImageLocation :{}",requiredFile  );
+					}
+				}
+			}
+		}
+		catch (Exception e) {
+			logger.info(myMarker,"getFilesFromImageLocation Ex: {} ",e.getMessage());
+		}
+		return files;
+	}
 	
 }

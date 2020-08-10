@@ -1,6 +1,10 @@
 package com.sim.wicmsapi.batch.processor;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,6 +16,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.sim.wicmsapi.batch.utility.ContentProcessFTPUtility;
+import com.sim.wicmsapi.batch.utility.ImageResize;
+import com.sim.wicmsapi.batch.utility.Utility;
 import com.sim.wicmsapi.entity.ContentProcessFTP;
 import com.sim.wicmsapi.entity.ContentProvider;
 import com.sim.wicmsapi.entity.ContentType;
@@ -53,29 +59,29 @@ public class ContentProcessFTPProcessor implements ItemProcessor<ContentProcessF
 	 
 	@Override
 	public ContentProcessFTP process(ContentProcessFTP item) throws Exception {		
-		ContentType contentType=contentTypeService.getCType(item.getContentTypeId());
-		ContentProvider contentProvider=contentProviderService.getContentProvider(item.getCpId());				
-		String cpPath = contentProvider.getServerFtpHome()+File.separator+contentType.getContentName().toUpperCase()+File.separator;
-		if(new File(cpPath+item.getProcessZipfile()).exists()) {			
-			checkUploadExtractLoc(item, cpPath, contentType, contentProvider);			
-		}else {
-			item.setProcessStatus("Failed ("+item.getProcessZipfile()+" is not found)");
-			logger.info(myMarker, " ContentProcessFTP  {} ",item);
-		}		
-		 
+		ContentType contentType=contentTypeService.getCType(item.getContentTypeId());	
+		checkUploadExtractLoc(item, contentType);		 
 		logger.info(myMarker, " ContentProcessFTP  {} ",item);
-		
 		return item;
 	}
 	
-	public void checkUploadExtractLoc(ContentProcessFTP item,String cpPath, ContentType contentType,ContentProvider contentProvider ) {
+	public void checkUploadExtractLoc(ContentProcessFTP item, ContentType contentType ) {
 		
 		try {
 			switch (contentType.getContentId()) {
 			case 6:
-				songsUploadExtraLoc(item, cpPath, contentType, contentProvider);
+				ContentProvider contentProvider=contentProviderService.getContentProvider(item.getCpId());				
+				String cpPath = contentProvider.getServerFtpHome()+File.separator+contentType.getContentName().toUpperCase()+File.separator;
+				if(new File(cpPath+item.getProcessZipfile()).exists()) {			
+					songsUploadExtraLoc(item, cpPath, contentType, contentProvider);
+				}else {
+					item.setProcessStatus("Failed ("+item.getProcessZipfile()+" is not found)");
+					logger.info(myMarker, " ContentProcessFTP  {} ",item);
+				}
+				
 				break;
 			case 31:
+				imageTypeResize(item);
 				break;
 			case 11:
 				break;
@@ -132,9 +138,33 @@ public class ContentProcessFTPProcessor implements ItemProcessor<ContentProcessF
 		}	
 	}
 	
-	public void imageTypeResize() {
-		
-		
+	public void imageTypeResize(ContentProcessFTP item) {
+		String result="";
+		try {
+			ImageResize imageresize=new ImageResize();
+			PhysicalFolder physicalFolder=  physicalFolderService.getPF(item.getPfId());
+			String imagelocations=physicalFolder.getLocation()+File.separator+item.getLocation()+File.separator;
+			List<File> files= ContentProcessFTPUtility.getFilesFromImageLocation(imagelocations);
+			Iterator<File> it=files.iterator();
+			Map<String,String> baseFiles = new HashMap<>();
+			while (it.hasNext()) {
+				File imageFile = it.next();
+				String imageName = imageFile.getName();
+				long width = Utility.getWidth(imageFile);
+				long height = Utility.getHeight(imageFile);								
+				baseFiles.put(width+"-"+height,imagelocations+imageName);
+			}
+			if(!baseFiles.isEmpty())
+				result=imageresize.processImageResizes(imagelocations,imagelocations,1, baseFiles);
+			if(result.equalsIgnoreCase("ok")) {
+				item.setProcessStatus("Success");
+			}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.info(myMarker," imageTypeResize Ex::  {} ",e);
+		}
+		//
 	}
 
 }

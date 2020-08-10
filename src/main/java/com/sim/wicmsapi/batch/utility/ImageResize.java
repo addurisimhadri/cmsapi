@@ -48,13 +48,14 @@ public class ImageResize{
 	String[] reSizes960x760=null; 
 	String[] reSizes960x570=null;
 	Process p = null;
-	String result="";
+	
 	String execPath; 
 	
 	File destinationDir = null;
 	File sourceDir=null;
 	 /* myMusicProcessImageResizes() Statrs */
 	public String myMusicProcessImageResizes(String sourcefilePath,String destinationfilePath,int contentType,Map<String, String> baseFiles)  {		
+		String result="";
 		List<String> list = null ;
 		File fileImage = null;
 		File currentfile1 = null ;
@@ -95,7 +96,7 @@ public class ImageResize{
 				long height = Utility.getHeight(fileImage);
 				logger.info(myMarker, "sourceDir {} == {} == {} ", currentfile1,width,height);
 				if(width>100)
-					resizeImage(currentfile1, width, height,contentType);
+					result=resizeImage(currentfile1, width, height,contentType);
 				fileImage = null ;
 				currentfile1 = null;
 			}	
@@ -103,7 +104,7 @@ public class ImageResize{
 		catch(Exception e) {
 			e.printStackTrace();
 			result="NOK";
-			logger.error(myMarker,"Error Message  {} ", e.getMessage());
+			logger.error(myMarker,"myMusicProcessImageResizes Ex::  {} ", e.getMessage());
 		} 
 		finally {
 			if(baseFiles != null)
@@ -112,7 +113,8 @@ public class ImageResize{
 		return result;		
 	}	
 
-	public String processImageResizes(String sourcefilePath,String destinationfilePath,int contentType,Map<String, String> baseFiles)  {		
+	public String processImageResizes(String sourcefilePath,String destinationfilePath,int contentType,Map<String, String> baseFiles)  {	
+		String result="";
 		List<String> list = null ;
 		File fileImage = null;
 		File currentfile1 = null ;
@@ -125,8 +127,7 @@ public class ImageResize{
 			strScrnResWGTRH=propertiesBean.getWeh().split(",");
 			strScrnResWLESR=propertiesBean.getWlh().split(",");
 			reSizes960x760=new String[0];
-			reSizes960x570=new String[0];
-		
+			reSizes960x570=new String[0];		
 			logger.info(myMarker, "propertiesBean {} ",propertiesBean);	
 			srcDirectory=sourcefilePath;
 			desDirectory=destinationfilePath;
@@ -136,7 +137,6 @@ public class ImageResize{
  			logger.error(myMarker, "Ex {} ", e.toString());		
 		}
 		try	{
-			logger.info(myMarker, "sourceDir {} == {} ", sourceDir,desDirectory);	
 			sourceDir = new File(srcDirectory);
 			destinationDir = new File(desDirectory);			
 			if(!destinationDir.exists()) {
@@ -153,7 +153,7 @@ public class ImageResize{
 				long height = Utility.getHeight(fileImage);
 				logger.info(myMarker, "sourceDir {} == {} == {} ", currentfile1,width,height);
 				if(width>100)
-					resizeImage(currentfile1, width, height,contentType);
+					result=resizeImage(currentfile1, width, height,contentType);
 				fileImage = null ;
 				currentfile1 = null;
 			}	
@@ -161,7 +161,7 @@ public class ImageResize{
 		catch(Exception e) {
 			e.printStackTrace();
 			result="NOK";
-			logger.error(myMarker,"Error Message  {} ", e.getMessage());
+			logger.error(myMarker,"processImageResizes Ex::  {} ", e.getMessage());
 		} 
 		finally {
 			if(baseFiles != null)
@@ -171,7 +171,8 @@ public class ImageResize{
 	}	
 	
 
-	public void resizeImage(File currentfile1,long width, long height, int contentType) {
+	public String resizeImage(File currentfile1,long width, long height, int contentType) {
+		String result="";
 		try {
 			if(width == height) {   
 				for(int WEQH =0 ; WEQH<strScrnResWEQH.length ; WEQH++) {  
@@ -181,7 +182,7 @@ public class ImageResize{
 				}
 			 }
 			 else if(width > height){				
-				 resizeImageCT(currentfile1, width, height, contentType);
+				 result=resizeImageCT(currentfile1, width, height, contentType);
 			 }
 			 else {
 				 for(int HGTRW =0 ; HGTRW<strScrnResWLESR.length ; HGTRW++) {
@@ -191,11 +192,14 @@ public class ImageResize{
 				 } 	
 			}  
 		} catch (Exception e) {
+			e.printStackTrace(); 
 			logger.error(myMarker,"Ex  :: {} ",e.getMessage());
 		}
+		return result;
 		
 	}
-	public void resizeImageCT(File currentfile1,long width, long height, int contentType) {
+	public String resizeImageCT(File currentfile1,long width, long height, int contentType) {
+		String result="";
 		try {
 			if(contentType==0) {
 				 for(int HLESW =0 ; HLESW<strScrnResWGTRH.length ; HLESW++) {   
@@ -205,26 +209,33 @@ public class ImageResize{
 					 }
 			}
 			else {
-			if(width==960 && height==760) {
-				for(int HLESW1 =0 ; HLESW1<reSizes960x760.length ; HLESW1++) {
-					String sizeHLESW1 = reSizes960x760[HLESW1];
-					resizeImageExecution(currentfile1, sizeHLESW1);
-					result="OK";
+				if(width==960 && height==760) {
+					for(int HLESW1 =0 ; HLESW1<reSizes960x760.length ; HLESW1++) {
+						String sizeHLESW1 = reSizes960x760[HLESW1];
+						resizeImageExecution(currentfile1, sizeHLESW1);
+						result="OK";
+					}
 				}
-			}
-		 	else if(width==960 && height==570) {
-				for(int HLESW2 =0 ; HLESW2<reSizes960x570.length ; HLESW2++) {
-					String sizeHLESW2 = reSizes960x570[HLESW2];
-					resizeImageExecution(currentfile1, sizeHLESW2);
-					result="OK";
+			 	else if(width==960 && height==570) {
+					for(int HLESW2 =0 ; HLESW2<reSizes960x570.length ; HLESW2++) {
+						String sizeHLESW2 = reSizes960x570[HLESW2];
+						resizeImageExecution(currentfile1, sizeHLESW2);
+						result="OK";
+					}
+				}else if(width==640 && height==480){
+					for(int HLESW =0 ; HLESW<strScrnResWGTRH.length ; HLESW++) {   
+						String sizeHLESW = strScrnResWGTRH[HLESW];
+						resizeImageExecution(currentfile1, sizeHLESW);
+						result="OK";
+					 }
+					
 				}
-			}
-			}
-			
+			}			
 		} catch (Exception e) {
+			e.printStackTrace();
 			logger.error(myMarker,"Ex :: {} ",e.getMessage());
 		}
-		
+		return result;
 	}
 	public  void resizeImageExecution(File currentfile1,String sizeHW) {
 		
@@ -241,6 +252,7 @@ public class ImageResize{
 				p = null;
 			}
 		} catch (Exception e) {
+			e.printStackTrace();
 			logger.error(myMarker,"Ex:: {} ",e.getMessage());
 		}	
 	}
