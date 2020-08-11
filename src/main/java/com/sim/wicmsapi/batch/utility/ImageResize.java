@@ -95,7 +95,7 @@ public class ImageResize{
 				long width = Utility.getWidth(fileImage);
 				long height = Utility.getHeight(fileImage);
 				logger.info(myMarker, "sourceDir {} == {} == {} ", currentfile1,width,height);
-				if(width>100)
+				if(width>479)
 					result=resizeImage(currentfile1, width, height,contentType);
 				fileImage = null ;
 				currentfile1 = null;
@@ -152,10 +152,10 @@ public class ImageResize{
 				long width = Utility.getWidth(fileImage);
 				long height = Utility.getHeight(fileImage);
 				logger.info(myMarker, "sourceDir {} == {} == {} ", currentfile1,width,height);
-				if(width>100)
+				if(width>479)
 					result=resizeImage(currentfile1, width, height,contentType);
 				fileImage = null ;
-				currentfile1 = null;
+				currentfile1 = null; 
 			}	
 		} 	               
 		catch(Exception e) {

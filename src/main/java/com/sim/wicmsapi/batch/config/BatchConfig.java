@@ -41,6 +41,5 @@ public class BatchConfig {
 	private Step fetchContFTP() {
 		return stepBuilderFactory.get("fetchTransaction").<ContentProcessFTP, ContentProcessFTP>chunk(10).reader(reader)
 				.processor(processor).writer(writer).build();
-
 	}
 }

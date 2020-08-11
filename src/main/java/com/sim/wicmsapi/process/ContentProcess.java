@@ -82,8 +82,10 @@ public class ContentProcess {
 						content= ContentUtility.storeContent(contentObject, contentType,contentexist,gameMetaService);
 						content=contentService.save(content);
 						
-						ContentProcessFTP contentProcessFTP=SongContentUtility.storeFTPContent(uploadObject, content);
-						contentProcessFTPService.save(contentProcessFTP);
+						if(content.getCtTypeId()==31) {
+							ContentProcessFTP contentProcessFTP=SongContentUtility.storeFTPContent(uploadObject, content);
+							contentProcessFTPService.save(contentProcessFTP);
+						}
 						
 						if(contentexist==null)
 							contentType.setMaxId(content.getContId());
