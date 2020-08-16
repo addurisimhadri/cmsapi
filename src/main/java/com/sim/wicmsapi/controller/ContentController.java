@@ -9,10 +9,13 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.Marker;
+import org.slf4j.MarkerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,6 +28,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.sim.wicmsapi.entity.Content;
 import com.sim.wicmsapi.service.ContentService;
+import com.sim.wicmsapi.utility.ContentUtility;
 import com.sim.wicmsapi.vo.ApiResponse;
 import com.sim.wicmsapi.vo.ContentDTO;
 
@@ -34,6 +38,7 @@ import com.sim.wicmsapi.vo.ContentDTO;
 @RequestMapping(value = "/cont")
 public class ContentController {
 	private static final Logger logger = LoggerFactory.getLogger(ContentController.class);
+	static Marker myMarker = MarkerFactory.getMarker("MYMARKER");
 	@Autowired
 	ContentService contentService;
 	
@@ -41,36 +46,37 @@ public class ContentController {
 	public Iterable<ContentDTO> getAppContents(@PathVariable("ctId") int ctId){
 		List<ContentDTO> contentDTOs=new ArrayList<>();
 		List<Content> contents= contentService.getContentByCT(ctId);
-		logger.info("============="+contents.size());
+		logger.info(myMarker,"============={}",contents.size());
 		Iterator<Content> it=contents.iterator();
 		while (it.hasNext()) {
 			Content content =  it.next();
 			ContentDTO contentDTO=convertObjToX(content, new TypeReference<ContentDTO>(){});
 			contentDTOs.add(contentDTO);
 		}
-		logger.info("====contentDTOs========="+contentDTOs.size());
+		logger.info(myMarker,"====contentDTOs========= {} ",contentDTOs.size());
 		return contentDTOs;
 	}
 	@GetMapping(value="/approved/{ctId}/getAll")
 	public Iterable<ContentDTO> getContents(@PathVariable("ctId") int ctId){
 		List<ContentDTO> contentDTOs=new ArrayList<>();
 		List<Content> contents= contentService.getApprovedContentByCT(ctId);
-		logger.info("============="+contents.size());
+		logger.info(myMarker,"============= {} ",contents.size());
 		Iterator<Content> it=contents.iterator();
 		while (it.hasNext()) {
 			Content content =  it.next();
 			ContentDTO contentDTO=convertObjToX(content, new TypeReference<ContentDTO>(){});
+			ContentUtility.changeStatus(contentDTO);
 			contentDTOs.add(contentDTO);
 		}
-		logger.info("====contentDTOs========="+contentDTOs.size());
+		logger.info(myMarker,"====contentDTOs========= {} ",contentDTOs.size());
 		return contentDTOs;
 	}
 	
 	
 	@PostMapping(value = "/updatestatus", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ApiResponse<Void> updateStatus(@RequestBody Map payload) {
+	public ApiResponse<Void> updateStatus(@RequestBody Map payload) { 
 		JSONObject root = new JSONObject( payload);
-		List<ContentDTO> contentDTOs=new ArrayList<ContentDTO>();
+		List<ContentDTO> contentDTOs=new ArrayList<>();
         JSONArray dataArray = root.getJSONArray("contents");
         for (int t=0; t<dataArray.length(); t++) {
             JSONObject jsonObj = dataArray.getJSONObject(t);
@@ -78,8 +84,21 @@ public class ContentController {
            contentDTOs.add(contentDTO);
         }
         contentService.updateStatus(contentDTOs);
-        //logger.info(""+contentDTOs);
-        return new ApiResponse<>(HttpStatus.OK.value(),"Employee update Status successfully.",null);
+        return new ApiResponse<>(HttpStatus.OK.value(),"Cintent update Status successfully.",null);
+	}
+	@DeleteMapping(value = "/delete", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ApiResponse<Void> delete(@RequestBody Map payload) { 
+		JSONObject root = new JSONObject( payload);
+		List<ContentDTO> contentDTOs=new ArrayList<>();
+        JSONArray dataArray = root.getJSONArray("contents");
+        for (int t=0; t<dataArray.length(); t++) {
+            JSONObject jsonObj = dataArray.getJSONObject(t);
+           ContentDTO contentDTO=convertJtoObj(jsonObj.toString());
+           contentDTOs.add(contentDTO);
+        }
+        logger.debug(myMarker, "");
+        contentService.updateStatus(contentDTOs);
+        return new ApiResponse<>(HttpStatus.OK.value(),"Content deleted successfully.",null);
 	}
 	
 	public  static ContentDTO convertObjToX(Object o, TypeReference<ContentDTO> ref) {

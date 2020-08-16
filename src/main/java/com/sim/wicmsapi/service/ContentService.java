@@ -15,5 +15,6 @@ public interface ContentService {
 	Content findContentCT(int contId,int ctTypeId);
 	void updateStatus(List<ContentDTO> contentDTOs);
 	public List<Content> getApprovedContentByCT(int ctTypeId);
+	public void delete(List<ContentDTO> contentDTOs);
 
 }

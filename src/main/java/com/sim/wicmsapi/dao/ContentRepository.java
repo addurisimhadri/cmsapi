@@ -16,7 +16,7 @@ public interface ContentRepository extends JpaRepository<Content, ContentId> {
 	Content findContent(@Param("name") String name, @Param("cpId") int cpId, @Param("ctTypeId") int ctTypeId);
 	@Query("select c from Content c where ctTypeId=:ctTypeId and status=1 order by c_upload_timestamp desc")
 	List<Content> findByCtTypeId(int ctTypeId);
-	@Query("select c from Content c where ctTypeId=:ctTypeId and status=2 order by c_upload_timestamp desc")
+	@Query("select c from Content c where ctTypeId=:ctTypeId order by c_upload_timestamp desc")
 	List<Content> getByCtTypeId(int ctTypeId);
 	Content findByContIdAndCtTypeId(int contId, int ctTypeId);
 	

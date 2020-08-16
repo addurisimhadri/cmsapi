@@ -4,7 +4,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.sim.wicmsapi.dao.ContentRepository;
@@ -53,6 +52,16 @@ public class ContentServiceImpl implements ContentService {
 	@Override
 	public List<Content> getApprovedContentByCT(int ctTypeId) {
 		return contentRepository.getByCtTypeId(ctTypeId);
+	}
+
+	@Override
+	public void delete(List<ContentDTO> contentDTOs) {
+		Iterator<ContentDTO> it=contentDTOs.iterator();
+		while (it.hasNext()) {
+			ContentDTO contentDTO = it.next();
+			Content content=contentRepository.findByContIdAndCtTypeId(contentDTO.getContId(), contentDTO.getCtTypeId());
+			contentRepository.delete(content);  		
+		}
 	}
 
 }

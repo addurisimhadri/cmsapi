@@ -13,6 +13,7 @@ import com.sim.wicmsapi.entity.Content;
 import com.sim.wicmsapi.entity.ContentType;
 import com.sim.wicmsapi.entity.GameMeta;
 import com.sim.wicmsapi.service.GameMetaService;
+import com.sim.wicmsapi.vo.ContentDTO;
 import com.sim.wicmsapi.vo.ContentObject;
 import com.sim.wicmsapi.vo.UploadObject;
 
@@ -152,6 +153,25 @@ public class ContentUtility {
 			
 		}catch (Exception e) {
 			e.printStackTrace();
+			logger.info(myMarker,"Ex:: {} ",e.getMessage());
+		}
+		
+	}
+	
+	public static void changeStatus(ContentDTO contentDTO) {
+		try {
+			switch (contentDTO.getStatus()) {
+			case "1":
+				contentDTO.setStatus("NA");
+				break;
+			case "2":
+				contentDTO.setStatus("A");
+				break;			
+
+			default:
+				break;
+			}
+		} catch (Exception e) {
 			logger.info(myMarker,"Ex:: {} ",e.getMessage());
 		}
 		
