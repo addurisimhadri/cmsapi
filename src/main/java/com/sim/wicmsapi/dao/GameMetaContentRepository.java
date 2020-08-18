@@ -8,5 +8,5 @@ import com.sim.wicmsapi.entity.GameMeta;
 @Repository
 public interface GameMetaContentRepository extends JpaRepository<GameMeta, GameContentId> {
 	
-
+	GameMeta findByGmIdAndContentId(int gmId, int contentId);
 }
