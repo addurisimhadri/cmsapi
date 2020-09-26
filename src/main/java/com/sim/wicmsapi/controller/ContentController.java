@@ -96,8 +96,8 @@ public class ContentController {
            ContentDTO contentDTO=convertJtoObj(jsonObj.toString());
            contentDTOs.add(contentDTO);
         }
-        logger.debug(myMarker, "");
-        contentService.updateStatus(contentDTOs);
+        logger.debug(myMarker, "===");
+        contentService.delete(contentDTOs);
         return new ApiResponse<>(HttpStatus.OK.value(),"Content deleted successfully.",null);
 	}
 	
